@@ -1,0 +1,14 @@
+{
+  "name": "TowerDefense",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/interneton/TowerDefense.git",
+  "author": "interneton <78246370+interneton@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.0"
+  }
+}
