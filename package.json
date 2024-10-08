@@ -5,6 +5,7 @@
   "repository": "https://github.com/interneton/TowerDefense.git",
   "author": "interneton <78246370+interneton@users.noreply.github.com>",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
