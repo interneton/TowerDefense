@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model towers {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  damage        Int      @default(1)
+  attackSpeed   Int      @default(1)
+  attackRange   Int      @default(1)
+  skillProbability     Int      @default(10)
+  cost          Int      @default(10)
+  atkType       AtkType
+
+  towerStat    towerStat?
+}
+
+model towerStat {
+  id              Int     @id @default(autoincrement())
+  towerId         Int     @unique
+  attakUp         Int     @default(1)
+  attackSpeedUp   Int     @default(1)
+  rangeUp         Int     @default(0)
+  probabilityUp   Int     @default(0)
+
+  towers towers @relation(fields: [towerId], references: [id])
+}
+
+enum AtkType {
+  TARGET
+  SPLASH
+}
+
+model mosters {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  moveSpeed     Int      @default(1)
+  defense       Int      @default(1)
+  hp            Int      @default(100)
+  gold          Int      @default(10)
+
+  monsterStat    monsterStat?
+}
+
+model monsterStat {
+  id              Int     @id @default(autoincrement())
+  mosterId        Int     @unique
+  defenseUp       Int     @default(1)
+  hpUp            Int     @default(1)
+  goldUp          Int     @default(0)
+  spawnGoblinUp   Int     @default(0)
+
+  mosters mosters @relation(fields: [mosterId], references: [id])
+}
+
+model exp {
+  id              Int     @id @default(autoincrement())
+  level           Int     @unique
+  exp             Int     @default(10)
+}
+
+model stage {
+  id                 Int     @id @default(autoincrement())
+  spawnGoblin        Int     @default(1)
+  totalSpawn         Int     @default(100)
+  spawnInterval      Int     @default(1)
+  limitTime          Int     @default(100)
+}
