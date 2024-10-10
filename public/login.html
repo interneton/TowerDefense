@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -32,8 +32,8 @@
         font-size: 16px;
         cursor: pointer;
       }
-    </style>
-  </head>
+    </style></head
+  >`
   <body>
     <div class="form-container">
       <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
@@ -44,18 +44,37 @@
       <button id="back">뒤로가기</button>
     </div>
     <script>
-      document.getElementById("login").addEventListener("click", () => {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+      /** 계정 로그인 API 호출 */
+      async function loginAccount(body) {
+        const res = await fetchAPI('POST', '/api/account/login', body, false);
+        // 유효성 검증 실패
+        if (res.status === 401) {
+          alert('비밀번호가 일치하지 않습니다.');
+        }
+        if (res.status === 404) {
+          alert('아이디가 존재하지 않습니다.');
+        }
+        return res.json();
+      }
 
-        /*
-          로그인 API 호출 후 로그인 성공 시 index.html로 이동시켜주세요!
-          이 때, 엑세스 토큰은 어딘가에 저장을 해놔야겠죠?!
-        */
+      document.getElementById('login').addEventListener('click', () => {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const body = { userId, password };
+        loginAccount(body).then((data) => {
+          if (data.isLogin === true) {
+            // 엑세스 토큰을 로컬 스토리지에 저장
+            localStorage.setItem('accessToken', data.accessToken);
+            window.location.href = `index.html`; // 로그인 API 호출 후 로그인 성공 시 index.html로 이동
+          } else {
+            location.reload(true);
+          }
+        });
       });
 
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html";
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html';
       });
     </script>
   </body>
