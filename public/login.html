@@ -43,25 +43,14 @@
       <button id="login">로그인</button>
       <button id="back">뒤로가기</button>
     </div>
-    <script>
-      /** 계정 로그인 API 호출 */
-      async function loginAccount(body) {
-        const res = await fetchAPI('POST', '/api/account/login', body, false);
-        // 유효성 검증 실패
-        if (res.status === 401) {
-          alert('비밀번호가 일치하지 않습니다.');
-        }
-        if (res.status === 404) {
-          alert('아이디가 존재하지 않습니다.');
-        }
-        return res.json();
-      }
+    <script type="module">
+      import { loginAccount } from './services/fatchAPI.js';
 
       document.getElementById('login').addEventListener('click', () => {
-        const username = document.getElementById('username').value;
+        const userId = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
         const body = { userId, password };
+
         loginAccount(body).then((data) => {
           if (data.isLogin === true) {
             // 엑세스 토큰을 로컬 스토리지에 저장
