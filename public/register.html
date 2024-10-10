@@ -46,12 +46,11 @@
     <script type="module">
       import { registAccount } from './services/fatchAPI.js';
 
-      console.log("it's work!");
       document.getElementById('register').addEventListener('click', () => {
         const userId = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const body = { userId, password };
-        console.log("it's work!");
+        console.log(body);
 
         //회원가입 API 호출 후 회원가입 성공 시 index.html로 이동
         registAccount(body).then((res) => {

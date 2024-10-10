@@ -18,7 +18,7 @@ router.post('/account/regist', async (req, res, next) => {
     const validateBody = await validSchema.account.validateAsync(req.body);
 
     // 아이디 중복 확인
-    const user = await prisma.account.findFirst({
+    const user = await prisma.users.findFirst({
       where: {
         userId: validateBody.userId,
       },
@@ -32,7 +32,7 @@ router.post('/account/regist', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(validateBody.password, 10);
 
     // Users 테이블에 사용자를 추가합니다.
-    const newUser = await prisma.account.create({
+    const newUser = await prisma.users.create({
       data: {
         userId: validateBody.userId,
         password: hashedPassword,
@@ -52,7 +52,7 @@ router.post('/account/regist', async (req, res, next) => {
 router.post('/account/login', async (req, res, next) => {
   try {
     const { userId, password } = req.body;
-    const user = await prisma.account.findFirst({ where: { userId } });
+    const user = await prisma.users.findFirst({ where: { userId } });
 
     // 사용자 존재 여부 확인
     if (!user) return res.status(404).json({ errorMessage: '존재하지 않는 사용자입니다.' });
@@ -66,21 +66,21 @@ router.post('/account/login', async (req, res, next) => {
     // 리프레시토큰 만료날짜 확인은 현재 시간보다 expiredAt이 큰 토큰이 있는지 확인하는 방법으로 합니다.
     let isExistsRefresh = true;
 
-    const curRefreshToken = await getExistRefreshToken(user.accountId);
+    const curRefreshToken = await getExistRefreshToken(user.id);
 
     if (!curRefreshToken) {
       isExistsRefresh = false;
     }
 
     if (!isExistsRefresh) {
-      const refreshToken = createRefreshToken(user.accountId);
+      const refreshToken = createRefreshToken(user.id);
       const createAtRefreshToken = Math.floor((new Date().getTime() + 1) / 1000);
       // 리프레시토큰의 만료기한을 가져온다.
       const expiredDate = validateToken(refreshToken, process.env.OUR_SECRET_REFRESH_KEY).exp;
 
       const refreshTokenFromStorage = await prisma.tokenStorage.create({
         data: {
-          accountId: user.accountId,
+          accountId: user.id,
           token: refreshToken,
           createdAt: createAtRefreshToken,
           expiredAt: expiredDate, // 가져온 만료기한을 그대로 기입
@@ -120,7 +120,7 @@ router.post('/account/login', async (req, res, next) => {
 /** 계정 로그아웃 */
 router.get('/account/logout', authMiddleware, async (req, res, next) => {
   const user = await prisma.account.findUnique({
-    where: { accountId: req.user.accountId },
+    where: { id: req.user.id },
   });
 
   if (!user) {
