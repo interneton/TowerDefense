@@ -1,12 +1,19 @@
 import { Base } from "./base.js";
 import { Monster } from "./monster.js";
 import { Tower } from "./tower.js";
+import { CLIENT_VERSION} from './constants.js';
 
-/* 
-  어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
-*/
+
+const token = localStorage.getItem('accessToken')
+if(!token){
+  alert("플레이 시작을 위해 로그인해주세요.")
+  window.location.href = 'login.html'
+}
 
 let serverSocket; // 서버 웹소켓 객체
+let sendEvent;
+let userId;
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -251,10 +258,13 @@ Promise.all([
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
   let somewhere;
-  serverSocket = io("서버주소", {
-    auth: {
-      token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
+  serverSocket = io("http://localhost:3000", {
+    query: {
+      clientVersion: CLIENT_VERSION,
     },
+    // auth: {
+    //   token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
+    // },
   });
 
   /* 
@@ -265,7 +275,44 @@ Promise.all([
       initGame();
     }
   */
-});
+
+    serverSocket.on('response', (data) => {
+      console.log(data);
+    });
+
+    serverSocket.on('connection', async (data) => {
+      console.log('서버와 연결되었습니다', data);
+      userId = data.uuid;
+      sendEvent(2, { timeStamp: Date.now() });
+    });
+
+    serverSocket.on('gameStart', (data) => {
+      if (data.status === 'success') {
+        userGold = data.userGold;
+        baseHp = data.baseHp;
+        numOfInitialTowers = 3;
+        monsterSpawnInterval = data.monsterSpawnInterval;
+
+        if (!isInitGame) {
+          initGame();
+        }
+      } else {
+        alert('게임 초기 정보 검증에 실패했습니다.');
+      }
+    });
+
+    sendEvent = (handlerId, payload) => {
+      serverSocket.emit('event', {
+        userId,
+        clientVersion: CLIENT_VERSION,
+        handlerId,
+        payload,
+      });
+    };
+
+  });
+
+  export { sendEvent };
 
 const buyTowerButton = document.createElement("button");
 buyTowerButton.textContent = "타워 구입";
