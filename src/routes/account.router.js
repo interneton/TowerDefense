@@ -143,7 +143,7 @@ router.get('/account/all', async (req, res, next) => {
   try {
       const users = await userDataClient.users.findMany({
           select: {
-              id : ture,
+              id : true,
               userId: true,
               createdAt: true,
           },

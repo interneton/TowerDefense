@@ -1,5 +1,5 @@
 import { userDataClient } from '../utils/prisma/index.js';
-import { createAccessToken, validateToken, getExistRefreshToken } from '../utils/tokens/tokens.js';
+import { createAccessToken, validateToken} from '../utils/tokens/tokens.js';
 
 /**
  * 인증 미들웨어
