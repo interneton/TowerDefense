@@ -30,10 +30,10 @@ export default async function (req, res, next) {
 
         const decodedToken = validateToken(token, process.env.OUR_SECRET_ACCESS_KEY);
 
-        const accountId = decodedToken.accountId;
+        const id = decodedToken.accountId;
 
-        const user = await userDataClient.account.findFirst({
-            where: { accountId: +accountId },
+        const user = await userDataClient.users.findFirst({
+            where: { id: +id },
         });
 
         if (!user) {

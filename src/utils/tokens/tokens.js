@@ -1,4 +1,4 @@
-import {userDataClient} from '../prisma/index.js';
+import { userDataClient } from '../prisma/index.js';
 import jwt from 'jsonwebtoken';
 // 토큰에 관련된 함수가 정의된 파일
 
@@ -42,7 +42,7 @@ export function validateToken(token, secretKey) {
 
 export async function getExistRefreshToken(id) {
     const currentTimeToCompareToken = Math.floor((new Date().getTime() + 1) / 1000);
-    const refreshToken = await prisma.tokenStorage.findFirst({
+    const refreshToken = await userDataClient.tokenStorage.findFirst({
         where: {
             accountId: id,
             expiredAt: {

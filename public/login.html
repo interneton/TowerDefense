@@ -55,7 +55,9 @@
           if (data.isLogin === true) {
             // 엑세스 토큰을 로컬 스토리지에 저장
             localStorage.setItem('accessToken', data.accessToken);
-            window.location.href = `index.html`; // 로그인 API 호출 후 로그인 성공 시 index.html로 이동
+            localStorage.setItem('userId', data.userId);
+            // window.location.href = `index.html`; // 로그인 API 호출 후 로그인 성공 시 index.html로 이동
+            console.log(data)
           } else {
             location.reload(true);
           }

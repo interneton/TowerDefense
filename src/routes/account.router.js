@@ -52,10 +52,11 @@ router.post('/account/regist', async (req, res, next) => {
 router.post('/account/login', async (req, res, next) => {
   try {
     const { userId, password } = req.body;
+    const { refreshToken } = req.headers
     const user = await userDataClient.users.findFirst({ where: { userId } });
 
     // 사용자 존재 여부 확인
-    if (!user) return res.status(404).json({ errorMessage: '존재하지 않는 사용자입니다.' });
+    if (!user) return res.status(404).json({ errorMessage: '아이디를 확인해 주세요' });
 
     // 입력받은 사용자의 비밀번호와 데이터베이스에 저장된 비밀번호를 비교합니다.
     if (!(await bcrypt.compare(password, user.password)))
@@ -66,34 +67,24 @@ router.post('/account/login', async (req, res, next) => {
     // 리프레시토큰 만료날짜 확인은 현재 시간보다 expiredAt이 큰 토큰이 있는지 확인하는 방법으로 합니다.
     let isExistsRefresh = true;
 
-    const curRefreshToken = await getExistRefreshToken(user.accountId);
+    const curRefreshToken = refreshToken
+    console.log(refreshToken)
 
     if (!curRefreshToken) {
       isExistsRefresh = false;
     }
 
     if (!isExistsRefresh) {
-      const refreshToken = createRefreshToken(user.accountId);
+      const refreshToken = createRefreshToken(user.id);
       const createAtRefreshToken = Math.floor((new Date().getTime() + 1) / 1000);
       // 리프레시토큰의 만료기한을 가져온다.
       const expiredDate = validateToken(refreshToken, process.env.OUR_SECRET_REFRESH_KEY).exp;
-
-      const refreshTokenFromStorage = await prisma.tokenStorage.create({
-        data: {
-          accountId: user.accountId,
-          token: refreshToken,
-          createdAt: createAtRefreshToken,
-          expiredAt: expiredDate, // 가져온 만료기한을 그대로 기입
-        },
-      });
-      // refreshToken을 쿠키에 저장하여 사용
-      const timediff = refreshTokenFromStorage.expiredAt - refreshTokenFromStorage.createdAt;
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'Strict',
-        maxAge: (refreshTokenFromStorage.expiredAt - refreshTokenFromStorage.createdAt) * 1000,
+        maxAge: (expiredDate - createAtRefreshToken) * 1000,
       });
       console.log('리프레시토큰 만료로 재발급합니다.');
     } else if (isExistsRefresh) {
@@ -108,10 +99,9 @@ router.post('/account/login', async (req, res, next) => {
       console.log('리프레시토큰 유효합니다.');
     }
 
-    const accessToken = createAccessToken(user.accountId);
-    // res.header('authorization', `Bearer ${accessToken}`);
+    const accessToken = createAccessToken(user.id);
 
-    return res.status(200).json({ isLogin: true, accessToken });
+    return res.status(200).json({ message: '로그인 성공', isLogin: true, accessToken: accessToken, userId : user.userId});
   } catch (err) {
     next(err);
   }
