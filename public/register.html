@@ -50,14 +50,12 @@
         const userId = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const body = { userId, password };
-        console.log(body);
 
         //회원가입 API 호출 후 회원가입 성공 시 index.html로 이동
         registAccount(body).then((res) => {
           if (!res) {
             return;
           }
-          // console.log("it's work!")
           window.location.href = 'index.html';
         });
       });
