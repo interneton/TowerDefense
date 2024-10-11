@@ -118,6 +118,7 @@ router.post('/account/login', async (req, res, next) => {
 /** 계정 삭제 */
 router.delete('/account', authMiddleware, async (req, res, next) => {
   try {
+      console.log(req.user)
       const user = await userDataClient.users.findUnique({
           where: { id: req.user.id },
       });
