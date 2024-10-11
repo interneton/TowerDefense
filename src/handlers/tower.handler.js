@@ -1,3 +1,7 @@
+export const initTowerHandler = (userId) => {
+    return null; 
+};
+
 export const purchaseTowerHandler = (userId) => {
     return null; 
 };
