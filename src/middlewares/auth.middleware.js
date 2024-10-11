@@ -1,4 +1,4 @@
-import { prisma } from '../utils/prisma/index.js';
+import { userDataClient } from '../utils/prisma/index.js';
 import { createAccessToken, validateToken, getExistRefreshToken } from '../utils/tokens/tokens.js';
 
 /**
@@ -32,7 +32,7 @@ export default async function (req, res, next) {
 
         const accountId = decodedToken.accountId;
 
-        const user = await prisma.account.findFirst({
+        const user = await userDataClient.account.findFirst({
             where: { accountId: +accountId },
         });
 

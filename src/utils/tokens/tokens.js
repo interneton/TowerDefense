@@ -1,4 +1,4 @@
-import {prisma} from '../prisma/index.js';
+import {userDataClient} from '../prisma/index.js';
 import jwt from 'jsonwebtoken';
 // 토큰에 관련된 함수가 정의된 파일
 
