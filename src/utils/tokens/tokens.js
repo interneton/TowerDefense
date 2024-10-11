@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
  */
 export function createAccessToken(id) {
     const accessToken = jwt.sign(
-        { accountId: +id }, // JWT 데이터
+        { id: +id }, // JWT 데이터
         process.env.OUR_SECRET_ACCESS_KEY,
         {expiresIn: '30m'}
     );
@@ -19,7 +19,7 @@ export function createAccessToken(id) {
 
 export function createRefreshToken(id) {
     const refreshToken = jwt.sign(
-        { accountId: +id }, // JWT 데이터
+        { id: +id }, // JWT 데이터
         process.env.OUR_SECRET_REFRESH_KEY,
         {expiresIn: process.env.REFRESH_EXPIRESIN}
     );

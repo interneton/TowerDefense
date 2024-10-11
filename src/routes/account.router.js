@@ -52,7 +52,7 @@ router.post('/account/regist', async (req, res, next) => {
 router.post('/account/login', async (req, res, next) => {
   try {
     const { userId, password } = req.body;
-    const { refreshToken } = req.headers
+    const { curRefreshToken } = req.headers
     const user = await userDataClient.users.findFirst({ where: { userId } });
 
     // 사용자 존재 여부 확인
@@ -67,8 +67,7 @@ router.post('/account/login', async (req, res, next) => {
     // 리프레시토큰 만료날짜 확인은 현재 시간보다 expiredAt이 큰 토큰이 있는지 확인하는 방법으로 합니다.
     let isExistsRefresh = true;
 
-    const curRefreshToken = refreshToken
-    console.log(refreshToken)
+    console.log(curRefreshToken)
 
     if (!curRefreshToken) {
       isExistsRefresh = false;
@@ -90,7 +89,7 @@ router.post('/account/login', async (req, res, next) => {
     } else if (isExistsRefresh) {
       // refreshToken이 아직 유효할때 그대로 쿠키로 저장
       console.log('account.router --- 리프레시 토큰 유효하여 기존 쿠키 유지');
-      res.cookie('refreshToken', curRefreshToken.token, {
+      res.cookie('refreshToken', curRefreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'Strict',
