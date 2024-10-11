@@ -1,5 +1,5 @@
 import express from 'express';
-import { prisma } from '../utils/prisma/index.js';
+import { userDataClient } from '../utils/prisma/index.js';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import {
@@ -18,7 +18,7 @@ router.post('/account/regist', async (req, res, next) => {
     const validateBody = await validSchema.account.validateAsync(req.body);
 
     // 아이디 중복 확인
-    const user = await prisma.account.findFirst({
+    const user = await userDataClient.usersData.findFirst({
       where: {
         userId: validateBody.userId,
       },
@@ -32,7 +32,7 @@ router.post('/account/regist', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(validateBody.password, 10);
 
     // Users 테이블에 사용자를 추가합니다.
-    const newUser = await prisma.account.create({
+    const newUser = await userDataClient.usersData.create({
       data: {
         userId: validateBody.userId,
         password: hashedPassword,
@@ -52,7 +52,7 @@ router.post('/account/regist', async (req, res, next) => {
 router.post('/account/login', async (req, res, next) => {
   try {
     const { userId, password } = req.body;
-    const user = await prisma.account.findFirst({ where: { userId } });
+    const user = await userDataClient.usersData.findFirst({ where: { userId } });
 
     // 사용자 존재 여부 확인
     if (!user) return res.status(404).json({ errorMessage: '존재하지 않는 사용자입니다.' });
@@ -78,7 +78,7 @@ router.post('/account/login', async (req, res, next) => {
       // 리프레시토큰의 만료기한을 가져온다.
       const expiredDate = validateToken(refreshToken, process.env.OUR_SECRET_REFRESH_KEY).exp;
 
-      const refreshTokenFromStorage = await prisma.tokenStorage.create({
+      const refreshTokenFromStorage = await userDataClient.tokenStorage.create({
         data: {
           accountId: user.accountId,
           token: refreshToken,
@@ -119,7 +119,7 @@ router.post('/account/login', async (req, res, next) => {
 
 /** 계정 로그아웃 */
 router.get('/account/logout', authMiddleware, async (req, res, next) => {
-  const user = await prisma.account.findUnique({
+  const user = await userDataClient.usersData.findUnique({
     where: { accountId: req.user.accountId },
   });
 
