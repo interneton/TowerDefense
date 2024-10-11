@@ -4,9 +4,11 @@ import { Tower } from "./tower.js";
 import { CLIENT_VERSION} from './constants.js';
 
 
-/* 
-  어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
-*/
+const token = localStorage.getItem('accessToken')
+if(!token){
+  alert("플레이 시작을 위해 로그인해주세요.")
+  window.location.href = 'login.html'
+}
 
 let serverSocket; // 서버 웹소켓 객체
 let sendEvent;
@@ -282,7 +284,7 @@ Promise.all([
       console.log('서버와 연결되었습니다', data);
       userId = data.uuid;
       sendEvent(2, { timeStamp: Date.now() });
-    });   
+    });
 
     serverSocket.on('gameStart', (data) => {
       if (data.status === 'success') {
