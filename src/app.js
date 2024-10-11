@@ -26,11 +26,11 @@ initSocket(server);
 server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
 
-  // try {
-  //   const assets = await loadGameAssets();
-  //   console.log(assets);
-  //   console.log('Assets loaded successfully');
-  // } catch (error) {
-  //   console.error('Failed to load game assets:', error);
-  // }
+  try {
+    const assets = await loadGameAssets();
+    console.log(assets);
+    console.log('Assets loaded successfully');
+  } catch (error) {
+    console.error('Failed to load game assets:', error);
+  }
 });
