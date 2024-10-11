@@ -39,17 +39,3 @@ export function validateToken(token, secretKey) {
         return null;
     }
 }
-
-export async function getExistRefreshToken(id) {
-    const currentTimeToCompareToken = Math.floor((new Date().getTime() + 1) / 1000);
-    const refreshToken = await userDataClient.tokenStorage.findFirst({
-        where: {
-            accountId: id,
-            expiredAt: {
-                gt:currentTimeToCompareToken
-            }
-        }
-    })
-
-    return refreshToken;
-}
