@@ -5,7 +5,6 @@ export const gameStart = (uuid, payload, socket) => {
   
   const { timeStamp } = payload;
   const { initData } = getGameAssets();
-  console.log(initData);
   const { userGold, baseHp} = initData.data;
   
   if (!timeStamp) {
@@ -17,7 +16,7 @@ export const gameStart = (uuid, payload, socket) => {
     message: '게임 시작!',
     userGold: userGold,
     baseHp: baseHp,
-    numOfInitialTowers: 1,
+    numOfInitialTowers: 3,
     monsterSpawnInterval: 3000,
   });
 };
