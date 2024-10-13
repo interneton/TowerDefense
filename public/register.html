@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -43,18 +43,25 @@
       <button id="register">회원가입</button>
       <button id="back">뒤로가기</button>
     </div>
-    <script>
-      document.getElementById("register").addEventListener("click", () => {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+    <script type="module">
+      import { registAccount } from './services/fatchAPI.js';
 
-        /* 
-          회원가입 API 호출 후 회원가입 성공 시 index.html로 이동시켜주세요!
-        */
+      document.getElementById('register').addEventListener('click', () => {
+        const userId = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const body = { userId, password };
+
+        //회원가입 API 호출 후 회원가입 성공 시 index.html로 이동
+        registAccount(body).then((res) => {
+          if (!res) {
+            return;
+          }
+          window.location.href = 'index.html';
+        });
       });
 
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html";
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html';
       });
     </script>
   </body>
