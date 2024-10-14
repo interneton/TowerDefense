@@ -1,6 +1,26 @@
 import { getGameAssets } from '../init/assets.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
+import redis from 'redis';
+
+// WARN: Redis에서 export된걸로 바꾸기
+const redisClient = redis.createClient({
+  url: ``,
+});
+
+const setData = async (key, value) => {
+  const json = JSON.stringify(value);
+  await redisClient.set(key, json);
+};
+
+const getData = async (key) => {
+  const json = await redisClient.get(key);
+  if (!json) {
+    return null;
+  }
+
+  return JSON.parse(json);
+};
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
@@ -12,14 +32,15 @@ export const gameStart = async (uuid, payload, socket) => {
   }
 
   // WARN: Redis로 구현
-  const user = await userDataClient.users.findUnique({
-    where: {
-      userId: uuid,
-    },
-  });
+  // const user = await userDataClient.users.findUnique({
+  //   where: {
+  //     userId: uuid,
+  //   },
+  // });
 
+  const user = await getData(uuid);
   // NOTE: 유저 정보가 없을 때만 초기 정보 넘기기
-  let result = {
+  const result = {
     status: 'success',
     message: '게임 시작!',
     userGold,
@@ -28,9 +49,16 @@ export const gameStart = async (uuid, payload, socket) => {
     monsterSpawnInterval: 3000,
   };
 
-  // TODO: 회원가입 시 정보 자체는 DB에 있을텐데, 데이터가 있다는 걸 어떻게 알아야 할까
-  if (!user) {
+  // 저장되어있는 값이 있으면 초기 정보에 덮어 씌우기
+  if (user) {
+    result.userGold = user.userGold;
+    result.baseHp = user.baseHP;
+    result.numOfInitialTowers = user.numOfInitialTowers;
   }
+
+  // TODO: 유저 데이터 저장해두기
+  const data = {};
+  await setData(uuid, data);
 
   socket.emit('gameStart', result);
 };
