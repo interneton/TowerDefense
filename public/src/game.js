@@ -290,7 +290,7 @@ Promise.all([
       if (data.status === 'success') {
         userGold = data.userGold;
         baseHp = data.baseHp;
-        numOfInitialTowers = 3;
+        numOfInitialTowers = data.numOfInitialTowers;
         monsterSpawnInterval = data.monsterSpawnInterval;
 
         if (!isInitGame) {
