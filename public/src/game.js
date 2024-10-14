@@ -263,6 +263,7 @@ Promise.all([
     },
     auth: {
       token: token, // 토큰이 저장된 어딘가에서 가져와야 합니다!
+      refreshToken : localStorage.getItem('refreshToken')
     },
   });
 
@@ -283,6 +284,12 @@ Promise.all([
       console.log('서버와 연결되었습니다', data);
       userId = data.uuid;
       sendEvent(2, { timeStamp: Date.now() });
+    });
+
+    serverSocket.on('disconnect', async (data) => {
+      console.log('모든 토큰이 만료됨.', data);
+      alert("재로그인이 필요합니다.")
+      window.location.href = 'login.html'
     });
 
     serverSocket.on('gameStart', (data) => {

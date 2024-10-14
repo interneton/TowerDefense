@@ -68,46 +68,12 @@ router.post('/account/login', async (req, res, next) => {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
 
     // 로그인에 성공하면 refreshToken과 AccessToken을 발급합니다.
-    // 단, 리프레시토큰은 tokenStorage에 저장되어 있는지 확인(만료도 확인)하여 발급합니다.
-    // 리프레시토큰 만료날짜 확인은 현재 시간보다 expiredAt이 큰 토큰이 있는지 확인하는 방법으로 합니다.
-    let isExistsRefresh = true;
-
-    console.log(curRefreshToken);
-
-    if (!curRefreshToken) {
-      isExistsRefresh = false;
-    }
-
-    if (!isExistsRefresh) {
-      const refreshToken = createRefreshToken(user.id);
-      const createAtRefreshToken = Math.floor((new Date().getTime() + 1) / 1000);
-      // 리프레시토큰의 만료기한을 가져온다.
-      const expiredDate = validateToken(refreshToken, process.env.OUR_SECRET_REFRESH_KEY).exp;
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: (expiredDate - createAtRefreshToken) * 1000,
-      });
-      console.log('리프레시토큰 만료로 재발급합니다.');
-    } else if (isExistsRefresh) {
-      // refreshToken이 아직 유효할때 그대로 쿠키로 저장
-      console.log('account.router --- 리프레시 토큰 유효하여 기존 쿠키 유지');
-      res.cookie('refreshToken', curRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: (curRefreshToken.expiredAt - Math.floor((new Date().getTime() + 1) / 1000)) * 1000, // 만료시간으로부터 남은시간 계산
-      });
-      console.log('리프레시토큰 유효합니다.');
-    }
-
+    const refreshToken = createRefreshToken(user.id);
     const accessToken = createAccessToken(user.id);
 
     return res
       .status(200)
-      .json({ message: '로그인 성공', isLogin: true, accessToken: accessToken, UUID: user.id });
+      .json({ message: '로그인 성공', isLogin: true, UUID: user.id, accessToken: accessToken, refreshToken: refreshToken});
   } catch (err) {
     next(err);
   }
