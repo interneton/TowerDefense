@@ -286,9 +286,12 @@ Promise.all([
       sendEvent(2, { timeStamp: Date.now() });
     });
 
-    serverSocket.on('disconnect', async (data) => {
-      console.log('모든 토큰이 만료됨.', data);
-      alert("재로그인이 필요합니다.")
+    //connect에서 검증에 이상이 있을 경우 작동
+    serverSocket.on('stop', async (data) => {
+      console.log('서버에 문제 발생', data);
+      alert(data.message)
+      // 강제 로그아웃 -> 토큰 몰수
+      localStorage.clear();
       window.location.href = 'login.html'
     });
 

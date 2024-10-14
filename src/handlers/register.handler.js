@@ -12,7 +12,7 @@ const registerHandler = (io) => {
     // 클라이언트 버전 비교!
     if(!CLIENT_VERSION.includes(clientVersion)){
       // 무엇을 해야할까 안맞으면..
-      socket.emit('disconnect', { message : "클라이언트 버전이 낮습니다." });
+      socket.emit('stop', { message : "클라이언트 버전이 낮습니다." });
     }
     
     const decodedToken = issueToken(socket);
@@ -20,7 +20,7 @@ const registerHandler = (io) => {
 
     // 모든 토큰이 만료된 경우
     if(!decodedToken){
-      socket.emit('disconnect', { message : "재로그인이 필요합니다." });
+      socket.emit('stop', { message : "재로그인이 필요합니다." });
       return 0;
     }
 
