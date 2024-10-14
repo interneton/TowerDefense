@@ -1,26 +1,6 @@
 import { getGameAssets } from '../init/assets.js';
-import { userDataClient } from '../utils/prisma/index.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
-import redis from 'redis';
-
-// WARN: Redis에서 export된걸로 바꾸기
-const redisClient = redis.createClient({
-  url: ``,
-});
-
-const setData = async (key, value) => {
-  const json = JSON.stringify(value);
-  await redisClient.set(key, json);
-};
-
-const getData = async (key) => {
-  const json = await redisClient.get(key);
-  if (!json) {
-    return null;
-  }
-
-  return JSON.parse(json);
-};
+import RedisManager from '../init/redis.js';
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
@@ -31,14 +11,7 @@ export const gameStart = async (uuid, payload, socket) => {
     throw new CustomError('게임 초기 정보 검증 실패', 'gameStart');
   }
 
-  // WARN: Redis로 구현
-  // const user = await userDataClient.users.findUnique({
-  //   where: {
-  //     userId: uuid,
-  //   },
-  // });
-
-  const user = await getData(uuid);
+  const user = await RedisManager.getCache(uuid);
   // NOTE: 유저 정보가 없을 때만 초기 정보 넘기기
   const result = {
     status: 'success',
@@ -58,7 +31,9 @@ export const gameStart = async (uuid, payload, socket) => {
 
   // TODO: 유저 데이터 저장해두기
   const data = {};
-  await setData(uuid, data);
+  await RedisManager.setCache(uuid, data);
+
+  // TODO: setStage 필요
 
   socket.emit('gameStart', result);
 };
