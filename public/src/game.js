@@ -29,6 +29,7 @@ let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
 const monsters = [];
 const towers = [];
+const towersData = [];
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
@@ -224,7 +225,6 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
-      sendEvent(32, {id: monster.monsterNumber, level: monster.level})
       monsters.splice(i, 1);
     }
   }
@@ -311,6 +311,13 @@ Promise.all([
       }
     });
 
+    serverSocket.on('allTowersData', (data) => {
+      
+      data.forEach( ele => {
+        towersData.push(ele);  
+      })
+    });
+
     sendEvent = (handlerId, payload) => {
       serverSocket.emit('event', {
         userId,
@@ -333,6 +340,9 @@ buyTowerButton.style.padding = "10px 20px";
 buyTowerButton.style.fontSize = "16px";
 buyTowerButton.style.cursor = "pointer";
 
-buyTowerButton.addEventListener("click", placeNewTower);
+buyTowerButton.addEventListener("click", () => {
+  
+  placeNewTower();
+});
 
 document.body.appendChild(buyTowerButton);
