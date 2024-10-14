@@ -168,6 +168,7 @@ function placeNewTower() {
   const tower = new Tower(x, y);
   towers.push(tower);
   tower.draw(ctx, towerImage);
+  console.log(towers);
 }
 
 function placeBase() {
@@ -208,7 +209,7 @@ function gameLoop() {
       }
     });
   });
-
+  
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
   base.draw(ctx, baseImage);
 
@@ -235,7 +236,7 @@ function initGame() {
   if (isInitGame) {
     return;
   }
-
+  
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
   placeInitialTowers(); // 설정된 초기 타워 개수만큼 사전에 타워 배치

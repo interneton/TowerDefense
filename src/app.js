@@ -4,6 +4,7 @@ import initSocket from './init/socket.js';
 import { loadGameAssets } from './init/assets.js';
 import cookieParser from 'cookie-parser';
 import ErrorHandlerMiddleware from './middlewares/error-handler.middleware.js';
+import { syncTowerStatsToRedis, syncTowersToRedis } from './models/tower.model.js';
 
 import accountRouter from './routes/account.router.js';
 
@@ -20,6 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 
 // 에러 핸들링 미들웨어를 등록합니다.
 app.use(ErrorHandlerMiddleware);
+
+await syncTowerStatsToRedis();
+await syncTowersToRedis();
 
 initSocket(server);
 

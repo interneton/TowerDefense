@@ -5,7 +5,7 @@ dotenv.config();
 
 // connect Redis
 const redisClient = redis.createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  url: `redis://localhost:6379`,
 });
 
 redisClient.on('connect', () => {
@@ -17,13 +17,5 @@ redisClient.on('error', (err) => {
 });
 
 await redisClient.connect(); // redis v4 연결 (비동기)
-
-await redisClient.set("LeeJungSu", "G.O.A.T");
-await redisClient.set("New", Date.now());
-
-
-console.log(await redisClient.get("LeeJungSu"));
-console.log(await redisClient.get("New"));
-
 
 export default redisClient;
