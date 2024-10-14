@@ -9,10 +9,10 @@ const registerHandler = (io) => {
     // 최초 커넥션을 맺은 이후 발생하는 각종 이벤트를 처리하는 곳
     const clientVersion = socket.handshake.query.clientVersion;
 
-    // 클라이언트 버전 비교!
+    // 클라이언트 버전 검사
     if(!CLIENT_VERSION.includes(clientVersion)){
-      // 무엇을 해야할까 안맞으면..
       socket.emit('stop', { message : "클라이언트 버전이 낮습니다." });
+      return 0;
     }
     
     const decodedToken = issueToken(socket);
