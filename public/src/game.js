@@ -1,21 +1,21 @@
-import { Base } from "./base.js";
-import { Monster } from "./monster.js";
-import { Tower } from "./tower.js";
-import { CLIENT_VERSION} from './constants.js';
+import { Base } from './base.js';
+import { Monster } from './monster.js';
+import { Tower } from './tower.js';
+import { CLIENT_VERSION } from './constants.js';
 
-
-const token = localStorage.getItem('accessToken')
-if(!token){
-  alert("플레이 시작을 위해 로그인해주세요.")
-  window.location.href = 'login.html'
+// 로그인이 완료되어 AccessToken을 가진 상태인지 확인
+const token = localStorage.getItem('accessToken');
+if (!token) {
+  alert('플레이 시작을 위해 로그인해주세요.');
+  window.location.href = 'login.html';
 }
 
 let serverSocket; // 서버 웹소켓 객체
 let sendEvent;
 let userId;
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -29,7 +29,6 @@ let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
 const monsters = [];
 const towers = [];
-const towersData = [];
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
@@ -37,17 +36,18 @@ let isInitGame = false;
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
-backgroundImage.src = "images/bg.webp";
+backgroundImage.src = 'images/bg.webp';
 
 const towerImage = new Image();
-towerImage.src = "images/tower.png";
+towerImage.src = 'images/tower.png';
 
 const baseImage = new Image();
-baseImage.src = "images/base.png";
+baseImage.src = 'images/base.png';
 
 const pathImage = new Image();
-pathImage.src = "images/path.png";
+pathImage.src = 'images/path.png';
 
+// 몬스터 모든 종류 로딩
 const monsterImages = [];
 for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
   const img = new Image();
@@ -57,6 +57,7 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
 
 let monsterPath;
 
+// 몬스터 길의 꼭짓점을 랜덤하게 생성
 function generateRandomMonsterPath() {
   const path = [];
   let currentX = 0;
@@ -86,6 +87,7 @@ function generateRandomMonsterPath() {
   return path;
 }
 
+// 배경, path의 꼭짓점을 잇는 선을 생성
 function initMap() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 그리기
   drawPath();
@@ -118,12 +120,13 @@ function drawPath() {
   }
 }
 
+// path 이미지를 선 방향과 일치하게 회전
 function drawRotatedImage(image, x, y, width, height, angle) {
-  ctx.save();
-  ctx.translate(x + width / 2, y + height / 2);
-  ctx.rotate(angle);
-  ctx.drawImage(image, -width / 2, -height / 2, width, height);
-  ctx.restore();
+  ctx.save(); // 현재 상태 저장
+  ctx.translate(x + width / 2, y + height / 2); // 화면의 중심점을 이동
+  ctx.rotate(angle); // 화면을 회전
+  ctx.drawImage(image, -width / 2, -height / 2, width, height); // 이미지 생성
+  ctx.restore(); // 화면 정위치를 복원
 }
 
 function getRandomPositionNearPath(maxDistance) {
@@ -150,8 +153,11 @@ function getRandomPositionNearPath(maxDistance) {
 function placeInitialTowers() {
   /* 
     타워를 초기에 배치하는 함수입니다.
-    무언가 빠진 코드가 있는 것 같지 않나요? 
+    무언가 빠진 코드가 있는 것 같지 않나요?
+    -> 인증?
   */
+
+  // 초기 타워 갯수만큼 길 주변에 랜덤하게 생성
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
     const tower = new Tower(x, y, towerCost);
@@ -163,8 +169,11 @@ function placeInitialTowers() {
 function placeNewTower() {
   /* 
     타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
-    빠진 코드들을 채워넣어주세요! 
+    빠진 코드들을 채워넣어주세요!
+    -> 서버에 검증 요청
   */
+
+  // 구매한 타워를 랜덤한 위치 생성
   const { x, y } = getRandomPositionNearPath(200);
   const tower = new Tower(x, y);
   towers.push(tower);
@@ -172,28 +181,33 @@ function placeNewTower() {
 }
 
 function placeBase() {
+  // 가장 오른쪽 끝에 bass를 생성
   const lastPoint = monsterPath[monsterPath.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
 }
 
 function spawnMonster() {
+  // 몬스터 객체를 생성 mosters에 저장
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
+/** 게임 진행 내용
+ *  requestAnimationFrame 함수에 의해 반복됨.
+ */
 function gameLoop() {
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
   drawPath(monsterPath); // 경로 다시 그리기
 
-  ctx.font = "25px Times New Roman";
-  ctx.fillStyle = "skyblue";
+  ctx.font = '25px Times New Roman';
+  ctx.fillStyle = 'skyblue';
   ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
-  ctx.fillStyle = "white";
+  ctx.fillStyle = 'white';
   ctx.fillText(`점수: ${score}`, 100, 100); // 현재 스코어 표시
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle = 'yellow';
   ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
-  ctx.fillStyle = "black";
+  ctx.fillStyle = 'black';
   ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
 
   // 타워 그리기 및 몬스터 공격 처리
@@ -202,7 +216,7 @@ function gameLoop() {
     tower.updateCooldown();
     monsters.forEach((monster) => {
       const distance = Math.sqrt(
-        Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2)
+        Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
       );
       if (distance < tower.range) {
         tower.attack(monster);
@@ -210,7 +224,9 @@ function gameLoop() {
     });
   });
 
-  // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
+  /** 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
+   *  bass가 체력이 감소 했을 경우 화면을 갱신
+   */
   base.draw(ctx, baseImage);
 
   for (let i = monsters.length - 1; i >= 0; i--) {
@@ -219,12 +235,13 @@ function gameLoop() {
       const isDestroyed = monster.move(base);
       if (isDestroyed) {
         /* 게임 오버 */
-        alert("게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ");
-        location.reload();
+        alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
+        location.reload(); // 화면 새로고침
       }
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      sendEvent(32, data);
       monsters.splice(i, 1);
     }
   }
@@ -243,28 +260,33 @@ function initGame() {
   placeBase(); // 기지 배치
 
   setInterval(spawnMonster, monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
-  gameLoop(); // 게임 루프 최초 실행
+  gameLoop(); // 게임 루프 최초 실행 -> 게임 진행 시작
   isInitGame = true;
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
+// Promise.all ->
 Promise.all([
+  /**
+   * 이미지가 html에 로딩이 되지 않은채로 진행되면 이미지를 불러올 때 찾아내지 못해 오류가 발생함.
+   * promise를 사용해서 이미지 로드가 완료되야 다음 코드로 넘어감.
+   * image 객체의 onload는 이미지가 성공적으로 로드됐을 때 호출되는 이벤트 핸들러
+   */
   new Promise((resolve) => (backgroundImage.onload = resolve)),
   new Promise((resolve) => (towerImage.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
-  ...monsterImages.map(
-    (img) => new Promise((resolve) => (img.onload = resolve))
-  ),
+  ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
-  serverSocket = io("http://localhost:3000", {
+  // let somewhere; 이미 위에 const token이 정의된 상태
+  //index.html 에서 웹에서 socket.io 함수 정보를 가져오고 있다.
+  serverSocket = io('http://localhost:3000', {
     query: {
       clientVersion: CLIENT_VERSION,
     },
     auth: {
       token: token, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-      refreshToken : localStorage.getItem('refreshToken')
     },
   });
 
@@ -277,72 +299,53 @@ Promise.all([
     }
   */
 
-    serverSocket.on('response', (data) => {
-      console.log(data);
-    });
-
-    serverSocket.on('connection', async (data) => {
-      console.log('서버와 연결되었습니다', data);
-      userId = data.uuid;
-      sendEvent(2, { timeStamp: Date.now() });
-    });
-
-    //connect에서 검증에 이상이 있을 경우 작동
-    serverSocket.on('stop', async (data) => {
-      console.log('서버에 문제 발생', data);
-      alert(data.message)
-      // 강제 로그아웃 -> 토큰 몰수
-      localStorage.clear();
-      window.location.href = 'login.html'
-    });
-
-    serverSocket.on('gameStart', (data) => {
-      if (data.status === 'success') {
-        userGold = data.userGold;
-        baseHp = data.baseHp;
-        numOfInitialTowers = data.numOfInitialTowers;
-        monsterSpawnInterval = data.monsterSpawnInterval;
-
-        if (!isInitGame) {
-          initGame();
-        }
-      } else {
-        alert('게임 초기 정보 검증에 실패했습니다.');
-      }
-    });
-
-    serverSocket.on('allTowersData', (data) => {
-      
-      data.forEach( ele => {
-        towersData.push(ele);  
-      })
-    });
-
-    sendEvent = (handlerId, payload) => {
-      serverSocket.emit('event', {
-        userId,
-        clientVersion: CLIENT_VERSION,
-        handlerId,
-        payload,
-      });
-    };
-
+  serverSocket.on('response', (data) => {
+    console.log(`data : ${data}`);
   });
 
-  export { sendEvent };
+  serverSocket.on('connection', async (data) => {
+    console.log('서버와 연결되었습니다', data);
+    userId = data.uuid;
+    sendEvent(2, { timeStamp: Date.now() });
+  });
 
-const buyTowerButton = document.createElement("button");
-buyTowerButton.textContent = "타워 구입";
-buyTowerButton.style.position = "absolute";
-buyTowerButton.style.top = "10px";
-buyTowerButton.style.right = "10px";
-buyTowerButton.style.padding = "10px 20px";
-buyTowerButton.style.fontSize = "16px";
-buyTowerButton.style.cursor = "pointer";
+  serverSocket.on('gameStart', (data) => {
+    console.log(data);
+    if (data.status === 'success') {
+      userGold = data.userGold;
+      baseHp = data.baseHp;
+      numOfInitialTowers = 3;
+      monsterSpawnInterval = data.monsterSpawnInterval;
 
-buyTowerButton.addEventListener("click", () => {
-  
-  placeNewTower();
+      if (!isInitGame) {
+        initGame();
+      }
+    } else {
+      alert('게임 초기 정보 검증에 실패했습니다.');
+    }
+  });
+
+  sendEvent = (handlerId, payload) => {
+    serverSocket.emit('event', {
+      userId,
+      clientVersion: CLIENT_VERSION,
+      handlerId,
+      payload,
+    });
+  };
 });
+
+export { sendEvent };
+
+const buyTowerButton = document.createElement('button');
+buyTowerButton.textContent = '타워 구입';
+buyTowerButton.style.position = 'absolute';
+buyTowerButton.style.top = '10px';
+buyTowerButton.style.right = '10px';
+buyTowerButton.style.padding = '10px 20px';
+buyTowerButton.style.fontSize = '16px';
+buyTowerButton.style.cursor = 'pointer';
+
+buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);

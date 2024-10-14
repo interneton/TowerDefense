@@ -1,9 +1,9 @@
 export const spawnMonsterHandler = (userId, payload, socket) => {
-     return null;
+  return null;
 };
 
 export const killMonsterHandler = (userId, payload, socket) => {
-    console.log(payload)
+  console.log(payload);
 
-    return null;
+  return null;
 };
