@@ -1,12 +1,8 @@
 import { getGameAssets } from '../init/assets.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
-import redis from 'redis';
-
-// WARN: Redis에서 export된걸로 바꾸기
-const redisClient = redis.createClient({
-  url: ``,
-});
+import redisClient from '../init/redis.js';
+import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 
 const setData = async (key, value) => {
   const json = JSON.stringify(value);
@@ -37,6 +33,9 @@ export const gameStart = async (uuid, payload, socket) => {
   //     userId: uuid,
   //   },
   // });
+
+  await syncTowersToRedis(socket);
+  await syncTowerStatsToRedis();
 
   const user = await getData(uuid);
   // NOTE: 유저 정보가 없을 때만 초기 정보 넘기기
