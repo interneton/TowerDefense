@@ -1,58 +1,41 @@
 import { getGameAssets } from '../init/assets.js';
+import { userDataClient } from '../utils/prisma/index.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 
-export const gameStart = (uuid, payload) => {
-  const { stages } = getGameAssets();
-  const firstStage = stages.data[0]
-  clearStage(uuid);
-  setStage(uuid, firstStage.id, payload.timestamp);
-  console.log('Stage:', firstStage);
+export const gameStart = async (uuid, payload, socket) => {
+  const { timeStamp } = payload;
+  const { initData } = getGameAssets();
+  const { userGold, baseHp } = initData.data;
 
-  return { status: 'success', stage: firstStage};
+  if (!timeStamp) {
+    throw new CustomError('게임 초기 정보 검증 실패', 'gameStart');
+  }
+
+  // WARN: Redis로 구현
+  const user = await userDataClient.users.findUnique({
+    where: {
+      userId: uuid,
+    },
+  });
+
+  // NOTE: 유저 정보가 없을 때만 초기 정보 넘기기
+  let result = {
+    status: 'success',
+    message: '게임 시작!',
+    userGold,
+    baseHp,
+    numOfInitialTowers: 3,
+    monsterSpawnInterval: 3000,
+  };
+
+  // TODO: 회원가입 시 정보 자체는 DB에 있을텐데, 데이터가 있다는 걸 어떻게 알아야 할까
+  if (!user) {
+  }
+
+  socket.emit('gameStart', result);
 };
 
 export const gameEnd = (uuid, payload) => {
-  // 클라이언트에서 받은 게임 종료 시 타임스탬프와 총 점수
-  const { timestamp: gameEndTime, score, collectItems } = payload;
-  const stagesLog = getStage(uuid);
-
-  if (!stagesLog.length) {
-    return { status: 'fail', message: 'No stages found for user' };
-  }
-
-  // 각 스테이지의 지속 시간을 계산하여 총 점수 계산
-  let totalScore = 0;
-  stagesLog.forEach((stage, index) => {
-    let stageEndTime;
-    if (index === stagesLog.length - 1) {
-      // 마지막 스테이지의 경우 종료 시간이 게임의 종료 시간
-      stageEndTime = gameEndTime;
-    } else {
-      // 다음 스테이지의 시작 시간을 현재 스테이지의 종료 시간으로 사용
-      stageEndTime = stagesLog[index + 1].timestamp;
-    }
-    const stageDuration = (stageEndTime - stage.timestamp) / 1000; // 스테이지 지속 시간 (초 단위)
-    totalScore += stageDuration; // 1초당 1점
-  });
-
-  // 각 아이템 유효성 검사 및 점수 계산
-  const { stages, items } = getGameAssets();
-
-  // 해당 층 등장 풀에 존재하는지 확인 후 맞으면 점수에 추가
-  collectItems.forEach(ci=>{
-    if(stages[ci.stageId-1000].itemPool.has(ci.itemId)){
-      totalScore += items[ci.itemId-1].score
-    }
-  })
-
-  // 점수와 타임스탬프 검증 (예: 클라이언트가 보낸 총점과 계산된 총점 비교)
-  // 오차범위 5
-  if (Math.abs(score - totalScore) > 5) {
-    return { status: 'fail', message: 'Score verification failed' };
-  }
-
-  // 모든 검증이 통과된 후, 클라이언트에서 제공한 점수 저장하는 로직
-  // saveGameResult(userId, clientScore, gameEndTime);
-  // 검증이 통과되면 게임 종료 처리
-  return { status: 'success', message: 'Game ended successfully', score };
+  // TODO: 게임 종료 시 데이터 저장
+  return { status: 'success' };
 };

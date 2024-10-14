@@ -2,7 +2,6 @@ import { getUsers, removeUser } from '../models/user.model.js';
 import { createStage, getStage } from '../models/stage.model.js';
 import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMapping.js';
-import { getGameAssets } from '../init/assets.js';
 
 export const handleConnection = (socket, userUUID) => {
   console.log(`New user connected: ${userUUID} with socket ID ${socket.id}`);
@@ -12,9 +11,7 @@ export const handleConnection = (socket, userUUID) => {
   createStage(userUUID);
 
   // 필요 데이터 불러오기
-  const { items } = getGameAssets();
-
-  socket.emit('connection', { uuid: userUUID, stage: getStage(userUUID), items: items.data});
+  socket.emit('connection', { uuid: userUUID });
 };
 
 export const handleDisconnect = (socket, uuid) => {
@@ -35,8 +32,8 @@ export const handleEvent = (io, socket, data) => {
     return;
   }
 
-  const response = handler(data.userId, data.payload);
-  if (response.broadcast) {
+  const response = handler(data.userId, data.payload, socket);
+  if (response  && response.broadcast) {
     io.emit('response', 'broadcast');
     return;
   }
