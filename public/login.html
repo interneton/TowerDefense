@@ -55,6 +55,7 @@
           if (data.isLogin === true) {
             // 엑세스 토큰을 로컬 스토리지에 저장
             localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
             localStorage.setItem('UUID', data.UUID);
             window.location.href = `index.html`; // 로그인 API 호출 후 로그인 성공 시 index.html로 이동
           } else {
