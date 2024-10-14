@@ -224,6 +224,7 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      sendEvent(32, {id: monster.monsterNumber, level: monster.level})
       monsters.splice(i, 1);
     }
   }
