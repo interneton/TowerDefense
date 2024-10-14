@@ -5,7 +5,7 @@ dotenv.config();
 
 // connect Redis
 const redisClient = redis.createClient({
-  url: `redis://localhost:6379`,
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
 });
 
 redisClient.on('connect', () => {
