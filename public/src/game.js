@@ -257,14 +257,14 @@ Promise.all([
   ),
 ]).then(() => {
   /* 서버 접속 코드 (여기도 완성해주세요!) */
-  let somewhere;
   serverSocket = io("http://localhost:3000", {
     query: {
       clientVersion: CLIENT_VERSION,
     },
-    // auth: {
-    //   token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-    // },
+    auth: {
+      token: token, // 토큰이 저장된 어딘가에서 가져와야 합니다!
+      refreshToken : localStorage.getItem('refreshToken')
+    },
   });
 
   /* 
@@ -284,6 +284,15 @@ Promise.all([
       console.log('서버와 연결되었습니다', data);
       userId = data.uuid;
       sendEvent(2, { timeStamp: Date.now() });
+    });
+
+    //connect에서 검증에 이상이 있을 경우 작동
+    serverSocket.on('stop', async (data) => {
+      console.log('서버에 문제 발생', data);
+      alert(data.message)
+      // 강제 로그아웃 -> 토큰 몰수
+      localStorage.clear();
+      window.location.href = 'login.html'
     });
 
     serverSocket.on('gameStart', (data) => {
