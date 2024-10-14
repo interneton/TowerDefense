@@ -1,3 +1,5 @@
+
+
 export class Tower {
   constructor(x, y, cost,level = 1,exp = 0) {
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
@@ -14,6 +16,7 @@ export class Tower {
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
+    this.upgradeCost = 100; // 타워 강화 비용
   }
 
   draw(ctx, towerImage) {
@@ -47,5 +50,13 @@ export class Tower {
     if (this.cooldown > 0) {
       this.cooldown--;
     }
+  }
+
+  upgrade() {
+    this.level++;
+    this.exp++;
+    this.attackPower += 10;
+    this.range += 50;
+    this.upgradeCost += 100;
   }
 }

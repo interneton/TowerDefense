@@ -26,7 +26,7 @@ export const addUserInfo = async (userId) => {
 
 export const getUserInfo = async (userId) => {
     // Redis에서 사용자 정보 조회
-    const cachedUser = await RedisManager.get(`user:${userId}`);
+    const cachedUser = await RedisManager.getCache(`user:${userId}`);
     if (cachedUser) {
         return JSON.parse(cachedUser);
     }

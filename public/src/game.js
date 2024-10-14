@@ -371,12 +371,23 @@ function updateTowerInventory() {
 }
 
 // 타워 강화 함수
-function upgradeTower(tower) {
-  if (userGold >= tower.upgradeCost) {
-    userGold -= tower.upgradeCost;
-    tower.upgrade();
-    updateTowerInventory();
+async function upgradeTower(tower) {
+  if (1000 >= tower.upgradeCost) {
+    try {
+      const response = await sendEvent(23, { towerId: tower.id, level: tower.level, gold: userGold, exp: tower.exp });
+      console.log(response);
+      if (response.status === 'success') {
+        userGold -= tower.upgradeCost;
+        tower.upgrade();
+        updateTowerInventory();
+        console.log('타워 업그레이드 성공');
+      } else {
+        console.log("업그레이드에 실패했습니다: " + response.message);
+      }
+    } catch (error) {
+      console.log("업그레이드 중 오류 발생: " + error);
+    }
   } else {
-    alert("골드가 부족합니다!");
+    console.log("골드가 부족합니다!");
   }
 }

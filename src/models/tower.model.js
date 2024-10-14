@@ -92,3 +92,15 @@ export const clearAllTowerStatsFromRedis = async () => {
     throw error;
   }
 };
+
+export const updateTower = async (towerId, towerData) => {
+  try {
+    const redisKey = `tower:${towerId}`;
+    await RedisManager.setCache(redisKey, towerData);
+    console.log(`타워 ID ${towerId}의 정보가 Redis에서 업데이트되었습니다.`);
+    return '성공';
+  } catch (error) {
+    console.error('타워 정보 업데이트 중 오류 발생:', error);
+    throw error;
+  }
+};

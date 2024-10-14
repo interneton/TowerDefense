@@ -1,5 +1,5 @@
 import { getUserInfo, updateUserGold } from '../models/userinfo.model.js';
-import { addTower, getTower } from '../models/tower.model.js';
+import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.model.js';
 import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {

@@ -14,7 +14,12 @@ const getData = async (key) => {
     return null;
   }
 
-  return JSON.parse(json);
+  try {
+    return JSON.parse(json);
+  } catch (error) {
+    console.error(`JSON 파싱 오류: ${error.message}`);
+    return null;
+  }
 };
 
 export const gameStart = async (uuid, payload, socket) => {
@@ -44,15 +49,15 @@ export const gameStart = async (uuid, payload, socket) => {
     monsterSpawnInterval: 3000,
   };
 
-  // 저장되어있는 값이 있으면 초기 정보에 덮어 씌우기
-  if (user) {
-    result.userGold = user.userGold;
-    result.baseHp = user.baseHP;
-    result.numOfInitialTowers = user.numOfInitialTowers;
+  // 저장되어있는 값이 있고 유효한 경우에만 초기 정보에 덮어 씌우기
+  if (user && typeof user === 'object') {
+    result.userGold = user.userGold ?? result.userGold;
+    result.baseHp = user.baseHP ?? result.baseHp;
+    result.numOfInitialTowers = user.numOfInitialTowers ?? result.numOfInitialTowers;
   }
 
   // TODO: 유저 데이터 저장해두기
-  const data = {};
+  const data = { ...result };
   await setData(uuid, data);
 
   socket.emit('gameStart', result);
