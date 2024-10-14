@@ -1,6 +1,7 @@
 import { getUsers, removeUser } from '../models/user.model.js';
 import { createStage, getStage } from '../models/stage.model.js';
 import { CLIENT_VERSION } from '../constants.js';
+import { validateToken, createAccessToken, createRefreshToken } from '../utils/tokens/tokens.js';
 import handlerMappings from './handlerMapping.js';
 
 export const handleConnection = (socket, userUUID) => {
@@ -39,3 +40,28 @@ export const handleEvent = (io, socket, data) => {
   }
   socket.emit('response', response);
 };
+
+export const issueToken = (socket) =>{
+  const {refreshToken, token} = socket.handshake.auth;
+  let decodedToken = validateToken(token, process.env.OUR_SECRET_ACCESS_KEY);
+  let isRefresh = false;
+
+  // accessToken이 만료된 경우.
+  if(!decodedToken){
+    // 토큰 유효성 검사
+    decodedToken = validateToken(refreshToken, process.env.OUR_SECRET_ACCESS_KEY)
+    if(!decodedToken){
+      return 0
+    }
+
+    const newAccessToken = createAccessToken();
+    const newRefreshToken = createRefreshToken();
+    isRefresh = true;
+
+    decodedToken["accessToken"] = newAccessToken;
+    decodedToken["refreshToken"] = newRefreshToken;
+  }
+  decodedToken["isRefresh"] = isRefresh;
+
+  return decodedToken
+}

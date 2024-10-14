@@ -2,11 +2,7 @@ import express from 'express';
 import { userDataClient } from '../utils/prisma/index.js';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../middlewares/auth.middleware.js';
-import {
-  createAccessToken,
-  createRefreshToken,
-  validateToken,
-} from '../utils/tokens/tokens.js';
+import { createAccessToken, createRefreshToken, validateToken } from '../utils/tokens/tokens.js';
 import validSchema from '../utils/joi/valid.schema.js';
 
 const router = express.Router();
@@ -41,10 +37,10 @@ router.post('/account/regist', async (req, res, next) => {
     // Users 인벤토리에 모험가를 하나 추가.
     const initInventory = await userDataClient.inventory.create({
       data: {
-        userId : newUser.id,
+        userId: newUser.id,
         towerId: 1,
-        level : 1,
-        exp : 0
+        level: 1,
+        exp: 0,
       },
     });
 
@@ -61,7 +57,7 @@ router.post('/account/regist', async (req, res, next) => {
 router.post('/account/login', async (req, res, next) => {
   try {
     const { userId, password } = req.body;
-    const { curRefreshToken } = req.headers
+    const { curRefreshToken } = req.headers;
     const user = await userDataClient.users.findFirst({ where: { userId } });
 
     // 사용자 존재 여부 확인
@@ -72,44 +68,12 @@ router.post('/account/login', async (req, res, next) => {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
 
     // 로그인에 성공하면 refreshToken과 AccessToken을 발급합니다.
-    // 단, 리프레시토큰은 tokenStorage에 저장되어 있는지 확인(만료도 확인)하여 발급합니다.
-    // 리프레시토큰 만료날짜 확인은 현재 시간보다 expiredAt이 큰 토큰이 있는지 확인하는 방법으로 합니다.
-    let isExistsRefresh = true;
-
-    console.log(curRefreshToken)
-
-    if (!curRefreshToken) {
-      isExistsRefresh = false;
-    }
-
-    if (!isExistsRefresh) {
-      const refreshToken = createRefreshToken(user.id);
-      const createAtRefreshToken = Math.floor((new Date().getTime() + 1) / 1000);
-      // 리프레시토큰의 만료기한을 가져온다.
-      const expiredDate = validateToken(refreshToken, process.env.OUR_SECRET_REFRESH_KEY).exp;
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: (expiredDate - createAtRefreshToken) * 1000,
-      });
-      console.log('리프레시토큰 만료로 재발급합니다.');
-    } else if (isExistsRefresh) {
-      // refreshToken이 아직 유효할때 그대로 쿠키로 저장
-      console.log('account.router --- 리프레시 토큰 유효하여 기존 쿠키 유지');
-      res.cookie('refreshToken', curRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'Strict',
-        maxAge: (curRefreshToken.expiredAt - Math.floor((new Date().getTime() + 1) / 1000)) * 1000, // 만료시간으로부터 남은시간 계산
-      });
-      console.log('리프레시토큰 유효합니다.');
-    }
-
+    const refreshToken = createRefreshToken(user.id);
     const accessToken = createAccessToken(user.id);
 
-    return res.status(200).json({ message: '로그인 성공', isLogin: true, accessToken: accessToken, UUID : user.id});
+    return res
+      .status(200)
+      .json({ message: '로그인 성공', isLogin: true, UUID: user.id, accessToken: accessToken, refreshToken: refreshToken});
   } catch (err) {
     next(err);
   }
@@ -118,45 +82,47 @@ router.post('/account/login', async (req, res, next) => {
 /** 계정 삭제 */
 router.delete('/account', authMiddleware, async (req, res, next) => {
   try {
-      console.log(req.user)
-      const user = await userDataClient.users.findUnique({
-          where: { id: req.user.id },
-      });
+    console.log(req.user);
+    const user = await userDataClient.users.findUnique({
+      where: { id: req.user.id },
+    });
 
-      if (!user) {
-          return res.status(404).json({ errorMessage: '유저를 찾을 수 없습니다.' });
-      }
+    if (!user) {
+      return res.status(404).json({ errorMessage: '유저를 찾을 수 없습니다.' });
+    }
 
-      await userDataClient.users.delete({
-          where: { id: req.user.id },
-      });
+    await userDataClient.users.delete({
+      where: { id: req.user.id },
+    });
 
-      res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken');
 
-      return res.status(201).json({ data: { userId: user.userId, message: '요청한 사용자가 삭제되었습니다.' } });
+    return res
+      .status(201)
+      .json({ data: { userId: user.userId, message: '요청한 사용자가 삭제되었습니다.' } });
   } catch (err) {
-      next(err);
+    next(err);
   }
 });
 
 /** 사용자 전체 조회 */
 router.get('/account/all', async (req, res, next) => {
   try {
-      const users = await userDataClient.users.findMany({
-          select: {
-              id : true,
-              userId: true,
-              createdAt: true,
-          },
-      });
+    const users = await userDataClient.users.findMany({
+      select: {
+        id: true,
+        userId: true,
+        createdAt: true,
+      },
+    });
 
-      if (users.length < 0) {
-          throw new Error('AccountNotFound');
-      }
+    if (users.length < 0) {
+      throw new Error('AccountNotFound');
+    }
 
-      return res.status(200).json({ data: users });
+    return res.status(200).json({ data: users });
   } catch (err) {
-      next(err);
+    next(err);
   }
 });
 
