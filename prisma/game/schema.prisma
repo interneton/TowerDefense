@@ -43,7 +43,7 @@ enum AtkType {
   SPLASH
 }
 
-model mosters {
+model monsters {
   id            Int      @id @default(autoincrement())
   name          String   @unique
   moveSpeed     Int      @default(1)
@@ -56,13 +56,13 @@ model mosters {
 
 model monsterStat {
   id              Int     @id @default(autoincrement())
-  mosterId        Int     @unique
+  monsterId        Int     @unique
   defenseUp       Int     @default(1)
   hpUp            Int     @default(1)
   goldUp          Int     @default(0)
   spawnGoblinUp   Int     @default(0)
 
-  mosters mosters @relation(fields: [mosterId], references: [id])
+  monsters monsters @relation(fields: [monsterId], references: [id])
 }
 
 model exp {

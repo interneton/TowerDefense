@@ -19,7 +19,7 @@ const ctx = canvas.getContext("2d");
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
-let userGold = 0; // 유저 골드
+let userGold = 1000; // 유저 골드
 let base; // 기지 객체
 let baseHp = 0; // 기지 체력
 
@@ -157,6 +157,7 @@ function placeInitialTowers() {
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
+  updateTowerInventory();
 }
 
 function placeNewTower() {
@@ -164,10 +165,14 @@ function placeNewTower() {
     타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
     빠진 코드들을 채워넣어주세요! 
   */
+  
+  userGold -= towerCost;
   const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(x, y);
+  const tower = new Tower(x, y, towerCost);
   towers.push(tower);
   tower.draw(ctx, towerImage);
+  updateTowerInventory();
+  
 }
 
 function placeBase() {
@@ -335,3 +340,43 @@ buyTowerButton.style.cursor = "pointer";
 buyTowerButton.addEventListener("click", placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+// 타워 인벤토리 생성
+const towerInventory = document.createElement("div");
+towerInventory.id = "towerInventory";
+towerInventory.style.position = "absolute";
+towerInventory.style.top = "60px";
+towerInventory.style.right = "10px";
+towerInventory.style.width = "200px";
+towerInventory.style.padding = "10px";
+towerInventory.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+towerInventory.style.border = "1px solid black";
+
+document.body.appendChild(towerInventory);
+
+// 타워 인벤토리 업데이트 함수
+function updateTowerInventory() {
+  towerInventory.innerHTML = "<h3>타워 인벤토리</h3>";
+  towers.forEach((tower, index) => {
+    const towerElement = document.createElement("div");
+    towerElement.innerHTML = `타워 ${index + 1} - 레벨: ${tower.level}`;
+    
+    const upgradeButton = document.createElement("button");
+    upgradeButton.textContent = "강화";
+    upgradeButton.addEventListener("click", () => upgradeTower(tower));
+    
+    towerElement.appendChild(upgradeButton);
+    towerInventory.appendChild(towerElement);
+  });
+}
+
+// 타워 강화 함수
+function upgradeTower(tower) {
+  if (userGold >= tower.upgradeCost) {
+    userGold -= tower.upgradeCost;
+    tower.upgrade();
+    updateTowerInventory();
+  } else {
+    alert("골드가 부족합니다!");
+  }
+}

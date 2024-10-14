@@ -1,20 +1,15 @@
 import { getGameAssets } from '../init/assets.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
-import redis from 'redis';
-
-// WARN: Redis에서 export된걸로 바꾸기
-const redisClient = redis.createClient({
-  url: ``,
-});
+import RedisManager from '../init/redis.js';
 
 const setData = async (key, value) => {
   const json = JSON.stringify(value);
-  await redisClient.set(key, json);
+  await RedisManager.setCache(key, json);
 };
 
 const getData = async (key) => {
-  const json = await redisClient.get(key);
+  const json = await RedisManager.getCache(key);
   if (!json) {
     return null;
   }

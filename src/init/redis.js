@@ -47,9 +47,25 @@ const RedisManager = {
 
   deleteCache: async (key) => {
     try {
-      await redisClient.del(key);
+      if (key.includes('*')) {
+        await RedisManager.deleteByPattern(key);
+      } else {
+        await redisClient.del(key);
+      }
     } catch (error) {
       console.error('캐시 삭제 오류', error);
+    }
+  },
+
+  deleteByPattern: async (pattern) => {
+    try {
+      const keys = await redisClient.keys(pattern);
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+      console.log(`${pattern} 패턴과 일치하는 모든 키가 삭제되었습니다.`);
+    } catch (error) {
+      console.error('패턴으로 캐시 삭제 중 오류 발생:', error);
     }
   },
 };
