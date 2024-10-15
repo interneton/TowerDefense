@@ -11,6 +11,7 @@ export const killMonsterHandler = async (uuid, payload, socket) => {
   // redis에서 몬스터 정보
   const index = payload.spawnId;
   const serverMonsters = await getMonsters(uuid);
+  const user = await getUserInfo(uuid);
 
   const monsterInfo = serverMonsters[index];
 
@@ -24,7 +25,7 @@ export const killMonsterHandler = async (uuid, payload, socket) => {
   serverMonsters.splice(index, 1, 0);
 
   const newGold = monsterInfo.monster.gold;
-  await updateUserGold(uuid, newGold);
+  await updateUserGold(uuid, newGold + user.gold);
 
   // redis에 갱신
   await setMonsters(uuid, serverMonsters);
