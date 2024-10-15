@@ -4,7 +4,7 @@ import { CLIENT_VERSION } from '../constants.js';
 import { validateToken, createAccessToken, createRefreshToken } from '../utils/tokens/tokens.js';
 import handlerMappings from './handlerMapping.js';
 
-export const handleConnection = (socket, userUUID, auth) => {
+export const handleConnection = (socket, userUUID) => {
   console.log(`New user connected: ${userUUID} with socket ID ${socket.id}`);
   console.log('Current users:', getUsers());
 
@@ -12,7 +12,7 @@ export const handleConnection = (socket, userUUID, auth) => {
   createStage(userUUID);
 
   // 필요 데이터 불러오기
-  socket.emit('connection', { uuid: userUUID, auth: auth });
+  socket.emit('connection', { uuid: userUUID });
 };
 
 export const handleDisconnect = (socket, uuid) => {

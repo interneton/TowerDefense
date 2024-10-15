@@ -3,7 +3,7 @@ import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.m
 import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
-    // await addUserInfo(userId);
+    await addUserInfo(userId);
     let user = await getUserInfo(userId);
     if(user.inventory.length < 3) {
         for(let i = 0; i < 4-user.inventory.length; i++) {

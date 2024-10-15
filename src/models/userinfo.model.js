@@ -48,7 +48,7 @@ export const updateUserInventory = async (uuid, inventory) => {
   return 'success';
 };
 
-export const updateTower = async (uuid, towerId, towerData) => {
+export const updateTower = async (userId, towerId, towerData) => {
   try {
     let user = await getUserInfo(uuid);
     const towerIndex = user.inventory.findIndex((tower) => tower.id === towerId);
