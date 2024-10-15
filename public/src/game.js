@@ -241,6 +241,7 @@ function gameLoop() {
     if (window.confirm('스테이지 클리어!?'))
       {
         location.reload();
+        sendEvent()
       }
       else
       {
@@ -320,7 +321,7 @@ Promise.all([
 
   serverSocket.on('gameStart', (data) => {
     if (data.status === 'success') {
-      userGold = data.userGold;
+      userGold = +data.userGold;
       baseHp = data.baseHp;
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
@@ -394,7 +395,9 @@ buyTowerButton.addEventListener('click', () => {
       alert(`${towerCost - userGold} 금액이 부족합니다`);
       return;
     }
-      
+    
+    userGold -= +towerCost;
+    console.log(`타워를 구매하였습니다. ${towerCost} 골드 사용. 현재 골드: ${userGold}`);
     placeNewTower(selectedTowerPosition);
 
     buyTowerButton.disabled = true;
@@ -449,6 +452,8 @@ canvas.addEventListener('click', (event) => {
     selectTower.style.left = `${leftPosition}px`;
     selectTower.style.top = `${topPosition}px`;
 
+    const salePrice = Math.round(existingTower.cost * 0.6); // 판매 가격은 원가의 60%로 반올림
+
     selectTower.innerHTML = `
       <h3>타워 정보</h3>
       <p>이름: ${existingTower.name}</p>
@@ -457,39 +462,59 @@ canvas.addEventListener('click', (event) => {
       <p>사거리: ${existingTower.attackRange}</p>
     `;
 
-    if (existingTower.name === '모험가 타워') {
-      const reinforceButton = document.createElement('button');
-      reinforceButton.textContent = '강화';
-      reinforceButton.style.display = 'block';
-      reinforceButton.style.marginTop = '10px';
-      reinforceButton.addEventListener('click', () => {
-        const reinforceOptionsDiv = document.createElement('div');
-        reinforceOptionsDiv.id = "reinforceOptions";
-        reinforceOptionsDiv.style.marginTop = '10px';
+    // 강화 버튼 추가
+    const reinforceButton = document.createElement('button');
+    reinforceButton.textContent = '강화';
+    reinforceButton.style.display = 'block';
+    reinforceButton.style.marginTop = '10px';
+    reinforceButton.addEventListener('click', () => {
+      const reinforceOptionsDiv = document.createElement('div');
+      reinforceOptionsDiv.id = "reinforceOptions";
+      reinforceOptionsDiv.style.marginTop = '10px';
 
-        const availableTowers = towersData.filter(tower => tower.name !== '모험가 타워');
+      const availableTowers = towersData.filter(tower => tower.name !== '모험가 타워');
 
-        if (availableTowers.length > 0) {
-          availableTowers.forEach(tower => {
-            const reinforceOptionButton = document.createElement('button');
-            reinforceOptionButton.textContent = `${tower.name} 강화`;
-            reinforceOptionButton.style.display = 'block';
-            reinforceOptionButton.style.marginBottom = '5px';
-            reinforceOptionButton.addEventListener('click', () => {
-              changeTower(existingTower, tower);
-              resetSelectTowerWindow();
-            });
-            reinforceOptionsDiv.appendChild(reinforceOptionButton);
+      if (availableTowers.length > 0) {
+        availableTowers.forEach(tower => {
+          const reinforceOptionButton = document.createElement('button');
+          reinforceOptionButton.textContent = `${tower.name} 강화 ${tower.cost}원`;
+          reinforceOptionButton.style.display = 'block';
+          reinforceOptionButton.style.marginBottom = '5px';
+          reinforceOptionButton.addEventListener('click', () => {
+
+            if(userGold < tower.cost)
+              {
+                alert(`${tower.cost - userGold} 금액이 부족합니다`);
+                return;
+              }
+              
+              userGold -= +tower.cost;
+              console.log(`타워를 강화하였습니다. ${tower.cost} 골드 사용. 현재 골드: ${userGold}`);
+
+            changeTower(existingTower, tower);
+            resetSelectTowerWindow();
           });
-        } else {
-          reinforceOptionsDiv.innerHTML = '<p>강화 가능한 타워가 없습니다.</p>';
-        }
+          reinforceOptionsDiv.appendChild(reinforceOptionButton);
+        });
+      } else {
+        reinforceOptionsDiv.innerHTML = '<p>강화 가능한 타워가 없습니다.</p>';
+      }
 
-        selectTower.appendChild(reinforceOptionsDiv);
-      });
+      selectTower.appendChild(reinforceOptionsDiv);
+    });
 
-      selectTower.appendChild(reinforceButton);
-    }
+    // 판매 버튼 추가
+    const sellButton = document.createElement('button');
+    sellButton.textContent = `판매 ${salePrice}원`;
+    sellButton.style.display = 'block';
+    sellButton.style.marginTop = '10px';
+    sellButton.addEventListener('click', () => {
+      sellTower(existingTower, salePrice);
+      resetSelectTowerWindow();
+    });
+
+    selectTower.appendChild(reinforceButton);
+    selectTower.appendChild(sellButton);
 
     selectTower.style.display = 'block';
   } else {
@@ -501,6 +526,26 @@ canvas.addEventListener('click', (event) => {
     buyTowerButton.disabled = false;
   }
 });
+
+// 타워 판매 함수
+function sellTower(tower, salePrice) {
+  // 타워 제거
+  const towerIndex = towers.indexOf(tower);
+  if (towerIndex !== -1) {
+    towers.splice(towerIndex, 1); // 타워 리스트에서 제거
+  }
+  
+  // 골드 추가
+  console.log(userGold);
+  userGold += +salePrice;
+  console.log(`타워가 판매되었습니다. ${salePrice} 골드 추가됨. 현재 골드: ${userGold}`);
+
+  // 타워 판매 이벤트 서버로 전송
+  sendEvent(33, { towerId: tower.id, salePrice });
+
+  // 인벤토리 업데이트
+  updateTowerInventory();
+}
 
 function changeTower(currentTower, newTower) {
   currentTower.name = newTower.name;
