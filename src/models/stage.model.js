@@ -50,25 +50,6 @@ export const getStage = async (uuid) => {
 
 // 스테이지 세팅
 export const setStage = async (uuid, id) => {
-  console.log(stages);
+  // await redisClient.set('stage: ' + uuid, JSON.stringify({ id: id }));
   return stages[uuid].push({ id });
-};
-
-// 유저가 종료할 때 스테이지 정보 저장
-export const saveStage = async (uuid) => {
-  try {
-    const currentStage = getStage(uuid);
-    await userDataClient.users.update({
-      where: {
-        id: uuid,
-      },
-      data: {
-        stage: currentStage,
-      },
-    });
-    return;
-  } catch (error) {
-    console.error('스테이지 저장 중 오류 발생', error);
-    throw error;
-  }
 };

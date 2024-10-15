@@ -32,6 +32,7 @@ let spawnMonsters = []; // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
+const stagesData = [];
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
