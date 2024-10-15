@@ -551,10 +551,10 @@ function changeTower(currentTower, newTower) {
 
   console.log(`타워가 ${newTower.name}(으)로 강화되었습니다.`);
                 
-  userGold -= tower.cost;
-  sendEvent(23, { towerId: currentTower.id, towercost: newTower.cost });
+  userGold -= newTower.cost;
+  sendEvent(23, {towers: towers, cost: newTower.cost} );
 
-  console.log(`타워를 강화하였습니다. ${tower.cost} 골드 사용. 현재 골드: ${userGold}`);
+  console.log(`타워를 강화하였습니다. ${newTower.cost} 골드 사용. 현재 골드: ${userGold}`);
 
   updateTowerInventory();
 }
