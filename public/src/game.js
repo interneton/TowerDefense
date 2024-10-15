@@ -16,6 +16,7 @@ let userId;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+let isGameEnd = true;
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -162,6 +163,7 @@ function placeInitialTowers() {
     const tower = new Tower(
       x,
       y,
+      'name',
       baseTower.damage,
       baseTower.attackRange,
       baseTower.attackSpeed,
@@ -224,26 +226,30 @@ function gameLoop() {
     const monster = monsters[i];
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
-      if (isDestroyed) {
+      if (isDestroyed && isGameEnd) {
         /* 게임 오버 */
+        isGameEnd = false;
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
         location.reload();
       }
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
-      console.log('처치 : ' + monster.id);
-      sendEvent(32, { spawnId: monster.id });
+      if (!monster.mapOut) {
+        console.log('처치 : ' + monster.id);
+        sendEvent(32, { spawnId: monster.id });
+      }
       monsters.splice(i, 1);
     }
   }
 
   // 게임 클리어
-  if (!spawnMonsters.length && !monsters.length) {
+  if (!spawnMonsters.length && !monsters.length && isGameEnd) {
+    isGameEnd = false;
     if (window.confirm('스테이지 클리어!?')) {
-      window.location.href = 'index.html';
+      location.reload();
     } else {
-      window.location.href = 'index.html';
+      location.href = 'index.html';
     }
   }
 
@@ -475,6 +481,7 @@ function placeNewTower(position) {
   const tower = new Tower(
     centerX,
     centerY,
+    'name',
     baseTower.damage,
     baseTower.attackRange,
     baseTower.attackSpeed,
