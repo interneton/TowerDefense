@@ -5,16 +5,16 @@ dotenv.config();
 
 export const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
-redisClient.on('error', (err) => console.error('Redis client error:', err));
+redisClient.on('error', (err) => console.error('Redis 클라이언트 오류:', err));
 
 const connectRedis = async () => {
   try {
     if (!redisClient.status || redisClient.status === 'end') {
       await redisClient.connect();
-      console.log('Connected to Redis');
+      console.log('Redis에 연결되었습니다.');
     }
   } catch (error) {
-    console.error('Unable to connect to Redis:', error);
+    console.error('Redis에 연결할 수 없습니다:', error);
   }
 };
 
@@ -24,9 +24,9 @@ export const RedisManager = {
   setCache: async (key, value, expiration = 3600) => {
     try {
       await redisClient.set(key, JSON.stringify(value), 'EX', expiration);
-      console.log(`Cache set successfully: ${key}`);
+      console.log(`캐시 설정 완료: ${key}`);
     } catch (error) {
-      console.error('Error setting cache:', error);
+      console.error('캐시 설정 중 오류 발생:', error);
     }
   },
 
@@ -35,7 +35,7 @@ export const RedisManager = {
       const data = await redisClient.get(key);
       return data ? JSON.parse(data) : null;
     } catch (error) {
-      console.error('Error getting cache:', error);
+      console.error('캐시 가져오기 중 오류 발생:', error);
       return null;
     }
   },
@@ -43,18 +43,18 @@ export const RedisManager = {
   deleteCache: async (key) => {
     try {
       await redisClient.del(key);
-      console.log(`Cache deleted successfully: ${key}`);
+      console.log(`캐시 삭제 완료: ${key}`);
     } catch (error) {
-      console.error('Error deleting cache:', error);
+      console.error('캐시 삭제 중 오류 발생:', error);
     }
   },
 
   updateCacheExpiration: async (key, expiration) => {
     try {
       await redisClient.expire(key, expiration);
-      console.log(`Cache expiration updated successfully: ${key}`);
+      console.log(`캐시 만료 시간 업데이트 완료: ${key}`);
     } catch (error) {
-      console.error('Error updating cache expiration:', error);
+      console.error('캐시 만료 시간 업데이트 중 오류 발생:', error);
     }
   },
 
@@ -62,9 +62,9 @@ export const RedisManager = {
     try {
       const userKey = `game:user:${userId}`;
       await redisClient.hmset(userKey, { gold, stage });
-      console.log(`User data cached: ${userId}`);
+      console.log(`사용자 데이터 캐시 완료: ${userId}`);
     } catch (error) {
-      console.error('Error caching user data:', error);
+      console.error('사용자 데이터 캐시 중 오류 발생:', error);
     }
   },
 
@@ -74,7 +74,7 @@ export const RedisManager = {
       const userData = await redisClient.hgetall(userKey);
       return userData && Object.keys(userData).length ? userData : null;
     } catch (error) {
-      console.error('Error retrieving user data:', error);
+      console.error('사용자 데이터 가져오기 중 오류 발생:', error);
       return null;
     }
   },
@@ -83,9 +83,9 @@ export const RedisManager = {
     try {
       const inventoryKey = `game:inventory:${userId}`;
       await redisClient.set(inventoryKey, JSON.stringify(inventory));
-      console.log(`User inventory cached: ${userId}`);
+      console.log(`사용자 인벤토리 캐시 완료: ${userId}`);
     } catch (error) {
-      console.error('Error caching user inventory:', error);
+      console.error('사용자 인벤토리 캐시 중 오류 발생:', error);
     }
   },
 
@@ -95,7 +95,7 @@ export const RedisManager = {
       const inventoryData = await redisClient.get(inventoryKey);
       return inventoryData ? JSON.parse(inventoryData) : null;
     } catch (error) {
-      console.error('Error retrieving user inventory:', error);
+      console.error('사용자 인벤토리 가져오기 중 오류 발생:', error);
       return null;
     }
   },
