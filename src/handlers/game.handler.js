@@ -33,7 +33,6 @@ export const gameStart = async (uuid, payload, socket) => {
   if (user) {
     result.userGold = user.gold;
     result.baseHp = user.baseHP;
-    result.numOfInitialTowers = user.numOfInitialTowers;
   }
 
   // TODO: 유저 데이터 저장해두기
@@ -45,7 +44,17 @@ export const gameStart = async (uuid, payload, socket) => {
   socket.emit('gameStart', result);
 };
 
-export const gameEnd = (uuid, payload) => {
+export const gameEnd = async (uuid, payload) => {
   // TODO: 게임 종료 시 데이터 저장
+  const { gold, stage } = payload;
+
+  await userDataClient.users.update({
+    where: { id: uuid },
+    data: {
+      gold: gold,
+      stage: stage,
+    },
+  });
+
   return { status: 'success' };
 };
