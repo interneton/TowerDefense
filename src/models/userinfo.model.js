@@ -11,13 +11,11 @@ export const addUserInfo = async (userId) => {
                 inventory: true
             }
         });
-        
-        const { userId: _, ...userinfos } = user;
 
         // Redis에 사용자 정보 저장
-        await RedisManager.setCache(`user:${userId}`, JSON.stringify(userinfos));
-        console.log(userinfos);
-        return userinfos;
+        await RedisManager.setCache(`user:${userId}`, JSON.stringify(user));
+        return user;
+
     } catch (error) {
         console.error('사용자 정보 추가 중 오류 발생:', error);
         throw error;

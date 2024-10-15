@@ -50,6 +50,7 @@
         const userId = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const body = { userId, password };
+        localStorage.clear();
 
         loginAccount(body).then((data) => {
           if (data.isLogin === true) {
