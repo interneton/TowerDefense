@@ -12,6 +12,7 @@ if(!token){
 
 let serverSocket; // 서버 웹소켓 객체
 let sendEvent;
+let sendEvent2;
 let userId;
 
 const canvas = document.getElementById("gameCanvas");
@@ -324,6 +325,22 @@ Promise.all([
       });
     };
 
+    sendEvent2 = async (handlerId, payload) => {
+      return new Promise((resolve, reject) => {
+        // 이벤트를 서버로 전송
+        serverSocket.emit('event', {
+          userId, // 사용자 ID
+          clientVersion: CLIENT_VERSION, // 클라이언트 버전
+          handlerId, // 핸들러 ID
+          payload, // 추가 데이터
+        });
+        // 서버로부터 응답을 받으면 Promise를 해결
+        serverSocket.on('response', (response) => {
+          resolve(response);
+        });
+      });
+    };
+
   });
 
   export { sendEvent };
@@ -371,22 +388,25 @@ function updateTowerInventory() {
 }
 
 // 타워 강화 함수
-async function upgradeTower(tower) {
-  if (1000 >= tower.upgradeCost) {
-    try {
-      const response = await sendEvent(23, { towerId: tower.id, level: tower.level, gold: userGold, exp: tower.exp });
-      console.log(response);
-      if (response.status === 'success') {
-        userGold -= tower.upgradeCost;
-        tower.upgrade();
-        updateTowerInventory();
-        console.log('타워 업그레이드 성공');
-      } else {
-        console.log("업그레이드에 실패했습니다: " + response.message);
-      }
-    } catch (error) {
-      console.log("업그레이드 중 오류 발생: " + error);
-    }
+function upgradeTower(tower) {
+  if (10000 >= tower.upgradeCost) {
+    sendEvent2(23, { towerId: tower.id, level: tower.level, gold: userGold, exp: tower.exp })
+      .then(resolve => {
+        console.log(resolve);
+        if (resolve.status === 'success') {
+          userGold -= tower.upgradeCost;
+          tower.level++;
+          tower.upgradeCost = Math.floor(tower.upgradeCost * 1.5);
+          tower.damage = Math.floor(tower.damage * 1.2);
+          console.log("타워가 성공적으로 강화되었습니다.");
+          updateTowerInventory();
+        } else {
+          console.log("타워 강화에 실패했습니다.");
+        }
+      })
+      .catch(error => {
+        console.log("업그레이드 중 오류 발생: " + error);
+      });
   } else {
     console.log("골드가 부족합니다!");
   }

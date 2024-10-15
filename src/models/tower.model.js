@@ -24,6 +24,8 @@ export const getTower = async (id) => {
   }
 };  
 
+
+
 //redis에 타워 정보 동기화
 export const syncTowersToRedis = async () => {
   try {
@@ -67,28 +69,6 @@ export const getTowerStat = async (towerId) => {
     return null;
   } catch (error) {
     console.error('타워 스탯 조회 중 오류 발생:', error);
-    throw error;
-  }
-};
-
-// 서버 종료 시 Redis에서 모든 타워 정보 삭제
-export const clearAllTowersFromRedis = async () => {
-  try {
-    await RedisManager.deleteCache('tower:*');
-    console.log('모든 타워 정보가 Redis에서 삭제되었습니다.');
-  } catch (error) {
-    console.error('Redis에서 타워 정보 삭제 중 오류 발생:', error);
-    throw error;
-  }
-};
-
-// 서버 종료 시 Redis에 있는 모든 타워 스탯 업그레이드 정보 삭제
-export const clearAllTowerStatsFromRedis = async () => {
-  try {
-    await RedisManager.deleteCache('towerStat:*');
-    console.log('모든 타워 스탯 업그레이드 정보가 Redis에서 삭제되었습니다.');
-  } catch (error) { 
-    console.error('Redis에서 타워 스탯 업그레이드 정보 삭제 중 오류 발생:', error);
     throw error;
   }
 };

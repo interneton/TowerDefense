@@ -32,7 +32,6 @@ export const handleEvent = (io, socket, data) => {
     socket.emit('response', { status: 'fail', message: 'Handler not found' });
     return;
   }
-
   const response = handler(data.userId, data.payload, socket);
   if (response  && response.broadcast) {
     io.emit('response', 'broadcast');

@@ -3,6 +3,7 @@ import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.m
 import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
+
     return null;
 };
 
@@ -11,6 +12,10 @@ export const purchaseTowerHandler = (userId) => {
 };
 
 export const upgradeTowerHandler = async (userId, payload) => {
+    console.log(userId);
+    if(!userId) {
+        return {status: 'fail', message: '유저 정보를 찾을 수 없습니다.'};
+    }
     let user = await getUserInfo(userId);
     let tower = await getTower(payload.towerId);
     let towerStat = await getTowerStat(payload.towerId);
@@ -21,6 +26,7 @@ export const upgradeTowerHandler = async (userId, payload) => {
     if(payload.gold !== user.gold&& payload.exp <= exp.exp) {
         return {status: 'fail', message: '골드가 부족하거나 경험치가 부족합니다.'};
     }
+    console.log(payload);
     user.gold -= towerStat.cost;
     
     if(payload.exp >= exp.exp) {
