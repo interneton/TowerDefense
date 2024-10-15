@@ -17,18 +17,16 @@ export const initTowerHandler = async (userId, payload) => {
 
 export const purchaseTowerHandler = async (userId,payload) => {
     let user = await getUserInfo(userId);
-    let tower = await getTower(payload.towerId);
-    if(!user || !tower) {
-        return {status: 'fail', message: '타워 정보를 찾을 수 없습니다.'};
+    if(!user) {
+        return {status: 'fail', message: '사용자 정보를 찾을 수 없습니다.'};
     }
     
-    if(Number(payload.gold) < tower.cost) {
-        console.log(payload.gold);
+    if(user.gold < payload.towerCost) {
         return {status: 'fail', message: '골드가 부족합니다.'};
     }
-    user.gold -= tower.cost;
-    let data = {userId: userId, towerId: payload.towerId, level:1, exp:0};
-    user.inventory.push(data);
+    user.gold -= payload.towerCost;
+    
+    user.inventory = payload.towerInven;
     await updateUserGold(userId, user.gold);
     await updateUserInventory(userId, user.inventory);
     return {status: 'success', message: '타워 구매 성공'};
