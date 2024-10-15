@@ -231,7 +231,14 @@ function gameLoop() {
 
   // 게임 클리어
   if(!spawnMonsters.length && !monsters.length){
-    alert("스테이지 클리어!")
+    if (window.confirm('스테이지 클리어!?'))
+      {
+        window.location.href = 'index.html';
+      }
+      else
+      {
+        window.location.href = 'index.html';
+      }
   }
 
   if (selectedTowerPosition) {
