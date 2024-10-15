@@ -152,10 +152,9 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-  /* 
-    타워를 초기에 배치하는 함수입니다.
-    무언가 빠진 코드가 있는 것 같지 않나요? 
-  */
+  sendEvent2(21, null).then((data) => {
+    console.log(data);
+  });
   let baseTower = getTower('모험가 타워');
 
   for (let i = 0; i < numOfInitialTowers; i++) {
@@ -403,14 +402,36 @@ canvas.addEventListener('click', (event) => {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
-  clearPreviousTower();
-
-  selectedTowerPosition = { x, y };
-
-  drawTowerPlaceholder(x, y);
-
-  buyTowerButton.disabled = false;
+  const existingTower = getTowerAtPosition(x, y);
+  if (existingTower) {
+    alert(
+      `\n타워 정보: ${existingTower.name}\n데미지: ${existingTower.damage}\n공격 속도: ${existingTower.attackSpeed}\n사거리: ${existingTower.attackRange}\n`,
+    );
+  } else {
+    clearPreviousTower();
+    selectedTowerPosition = { x, y };
+    drawTowerPlaceholder(x, y);
+    buyTowerButton.disabled = false;
+  }
 });
+
+function getTowerAtPosition(x, y) {
+  const towerWidth = 78;
+  const towerHeight = 150;
+
+  for (let i = 0; i < towers.length; i++) {
+    const tower = towers[i];
+
+    const isWithinX = x >= tower.x && x <= tower.x + towerWidth;
+    const isWithinY = y >= tower.y && y <= tower.y + towerHeight;
+
+    if (isWithinX && isWithinY) {
+      return tower;
+    }
+  }
+
+  return null;
+}
 
 function drawTowerPlaceholder(x, y) {
   const towerWidth = 100;
