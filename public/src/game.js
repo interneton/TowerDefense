@@ -16,6 +16,7 @@ let userId;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+let isGameEnd = true;
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
@@ -161,7 +162,7 @@ function placeInitialTowers() {
 
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
-    const tower = new Tower(x, y, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+    const tower = new Tower(x, y, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
@@ -216,8 +217,9 @@ function gameLoop() {
     const monster = monsters[i];
     if (monster.hp > 0) {
       const isDestroyed = monster.move(base);
-      if (isDestroyed) {
+      if (isDestroyed && isGameEnd) {
         /* 게임 오버 */
+        isGameEnd = false;
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
         location.reload();
         sendEvent(3, {});
@@ -225,21 +227,24 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
-      console.log("처치 : " + monster.id)
-      sendEvent(32, {spawnId : monster.id})
+      if(!monster.mapOut){
+        console.log("처치 : " + monster.id)
+        sendEvent(32, {spawnId : monster.id})
+      }
       monsters.splice(i, 1);
     }
   }
 
   // 게임 클리어
-  if(!spawnMonsters.length && !monsters.length){
+  if(!spawnMonsters.length && !monsters.length && isGameEnd){
+    isGameEnd = false;
     if (window.confirm('스테이지 클리어!?'))
       {
-        window.location.href = 'index.html';
+        location.reload();
       }
       else
       {
-        window.location.href = 'index.html';
+        location.href = 'index.html';
       }
   }
 
@@ -569,7 +574,7 @@ function placeNewTower(position) {
 
   let baseTower = getTower("모험가 타워"); 
 
-  const tower = new Tower(centerX, centerY, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+  const tower = new Tower(centerX, centerY, "name", baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
   towers.push(tower);
   tower.draw(ctx, towerImage);
 
