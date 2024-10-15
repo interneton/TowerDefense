@@ -1,6 +1,6 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
-import redisClient from '../init/redis.js';
+import { redisClient } from '../init/redis.js';
 import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 import { spawnMonsters } from '../models/monster.model.js'

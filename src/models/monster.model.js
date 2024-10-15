@@ -1,6 +1,6 @@
 import { gameDataClient } from '../utils/prisma/index.js';
 import { userDataClient } from '../utils/prisma/index.js';
-import redisClient from '../init/redis.js';
+import { redisClient } from '../init/redis.js';
 
 // redis에 몬스터 정보 업로드
 export const initMonsters = async () => {
