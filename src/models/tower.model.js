@@ -1,5 +1,5 @@
 import { gameDataClient } from '../utils/prisma/index.js';
-import RedisManager from '../init/redis.js';
+import { RedisManager } from '../init/redis.js';
 
 export const addTower = async (towerData) => {
   try {
@@ -27,7 +27,7 @@ export const getTower = async (id) => {
 
 
 //redis에 타워 정보 동기화
-export const syncTowersToRedis = async () => {
+export const syncTowersToRedis = async (socket) => {
   try {
     const towers = await gameDataClient.towers.findMany();
 
