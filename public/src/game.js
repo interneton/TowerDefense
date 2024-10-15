@@ -33,6 +33,7 @@ let spawnMonsters = []; // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
+let stagesData = [];
 
 let moveStage = true;
 let existingTower = null;
@@ -348,6 +349,7 @@ Promise.all([
       monsterSpawnInterval = data.monsterSpawnInterval;
       spawnMonsters = data.monsters;
       console.log(spawnMonsters);
+      stagesData.push(data.stage);
 
       if (!isInitGame) {
         initGame();

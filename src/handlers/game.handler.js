@@ -4,6 +4,7 @@ import { RedisManager } from '../init/redis.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 import { spawnMonsters } from '../models/monster.model.js';
+import { syncStageToRedis } from '../models/stage.model.js';
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
@@ -29,6 +30,7 @@ export const gameStart = async (uuid, payload, socket) => {
     syncTowersToRedis(socket),
     syncTowerStatsToRedis(),
     spawnMonsters(uuid),
+    syncStageToRedis(),
   ]);
   result['monsters'] = monsters;
 

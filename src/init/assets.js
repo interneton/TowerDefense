@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initMonsters } from "../models/monster.model.js"
+import { initMonsters } from '../models/monster.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,6 +34,6 @@ export const loadGameAssets = async () => {
   }
 };
 
-export const getGameAssets = async() => {
+export const getGameAssets = async () => {
   return gameAssets;
 };

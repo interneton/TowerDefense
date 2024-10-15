@@ -1,8 +1,8 @@
 {
-    "name": "startData",
-    "version": "1.0.0",
-    "data": {
-      "userGold": 1000, 
-      "baseHp": 200    
-    }
+  "name": "startData",
+  "version": "1.0.0",
+  "data": {
+    "userGold": 1000,
+    "baseHp": 200
+  }
 }

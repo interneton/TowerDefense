@@ -11,11 +11,11 @@ export const moveStageHandler = async (uuid, payload) => {
   }
 
   // 유저의 현재 스테이지 배열을 가져오고, 최대 스테이지 ID를 찾는다.
-  const currentStages = await getStage(uuid);
+  let currentStages = await getStage(uuid);
 
   if (!currentStages) {
     await createStage(uuid);
-    currentStage = await getStage(uuid);
+    currentStages = await getStage(uuid);
   }
 
   if (!currentStages.length) {
