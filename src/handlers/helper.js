@@ -3,6 +3,7 @@ import { createStage, getStage } from '../models/stage.model.js';
 import { CLIENT_VERSION } from '../constants.js';
 import { validateToken, createAccessToken, createRefreshToken } from '../utils/tokens/tokens.js';
 import handlerMappings from './handlerMapping.js';
+import { redisClient } from '../init/redis.js';
 
 export const handleConnection = (socket, userUUID) => {
   console.log(`New user connected: ${userUUID} with socket ID ${socket.id}`);
@@ -15,8 +16,8 @@ export const handleConnection = (socket, userUUID) => {
   socket.emit('connection', { uuid: userUUID });
 };
 
-export const handleDisconnect = (socket, uuid) => {
-  removeUser(socket.id); // 사용자 삭제
+export const handleDisconnect = async (socket, uuid) => {
+  await redisClient.del(uuid); // 사용자 삭제
   console.log(`User disconnected: ${socket.id}`);
   console.log('Current users:', getUsers());
 };
@@ -38,31 +39,31 @@ export const handleEvent = async (io, socket, data) => {
     io.emit('response', 'broadcast');
     return;
   }
-  
+
   socket.emit('response', response);
 };
 
-export const issueToken = (socket) =>{
-  const {refreshToken, token} = socket.handshake.auth;
+export const issueToken = (socket) => {
+  const { refreshToken, token } = socket.handshake.auth;
   let decodedToken = validateToken(token, process.env.OUR_SECRET_ACCESS_KEY);
   let isRefresh = false;
 
   // accessToken이 만료된 경우.
-  if(!decodedToken){
+  if (!decodedToken) {
     // 토큰 유효성 검사
-    decodedToken = validateToken(refreshToken, process.env.OUR_SECRET_ACCESS_KEY)
-    if(!decodedToken){
-      return 0
+    decodedToken = validateToken(refreshToken, process.env.OUR_SECRET_ACCESS_KEY);
+    if (!decodedToken) {
+      return 0;
     }
 
     const newAccessToken = createAccessToken();
     const newRefreshToken = createRefreshToken();
     isRefresh = true;
 
-    decodedToken["accessToken"] = newAccessToken;
-    decodedToken["refreshToken"] = newRefreshToken;
+    decodedToken['accessToken'] = newAccessToken;
+    decodedToken['refreshToken'] = newRefreshToken;
   }
-  decodedToken["isRefresh"] = isRefresh;
+  decodedToken['isRefresh'] = isRefresh;
 
-  return decodedToken
-}
+  return decodedToken;
+};
