@@ -1,7 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import { RedisManager } from '../init/redis.js';
-import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
+import { userDataClient } from '../utils/prisma/index.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 import { spawnMonsters } from '../models/monster.model.js'
 
@@ -61,6 +61,8 @@ export const gameStart = async (uuid, payload, socket) => {
     result.towers = towers;
   }
 
+  await RedisManager.cacheUserData(uuid, result.userGold, result.stage)
+
   socket.emit('gameStart', result);
 };
 
@@ -80,8 +82,8 @@ export const gameEnd = async (uuid, payload) => {
   });
 
   // 캐시 비우기
-  RedisManager.deleteCache(`game:user:${uuid}`);
-  RedisManager.deleteCache(`game:inventory:${uuid}`);
+  await RedisManager.deleteCache(`game:user:${uuid}`);
+  await RedisManager.deleteCache(`game:inventory:${uuid}`);
 
   return { status: 'success' };
 };
