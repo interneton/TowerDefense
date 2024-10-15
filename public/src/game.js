@@ -32,6 +32,8 @@ const monsters = [];
 const towers = [];
 const towersData = [];
 
+let existingTower = null;
+
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
@@ -159,7 +161,7 @@ function placeInitialTowers() {
 
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
-    const tower = new Tower(x, y, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+    const tower = new Tower(x, y, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
@@ -201,7 +203,7 @@ function gameLoop() {
       const distance = Math.sqrt(
         Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
       );
-      if (distance < tower.range) {
+      if (distance < tower.attackRange) {
         tower.attack(monster);
       }
     });
@@ -218,6 +220,7 @@ function gameLoop() {
         /* 게임 오버 */
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
         location.reload();
+        sendEvent(3, {});
       }
       monster.draw(ctx);
     } else {
@@ -398,23 +401,116 @@ buyTowerButton.addEventListener('click', () => {
 
 document.body.appendChild(buyTowerButton);
 
+const selectTower = document.createElement("div");
+selectTower.id = "selectTower";
+selectTower.style.position = "absolute";
+selectTower.style.width = "200px";
+selectTower.style.padding = "10px";
+selectTower.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+selectTower.style.border = "1px solid black";
+selectTower.style.display = "none";
+
+document.body.appendChild(selectTower);
+
 canvas.addEventListener('click', (event) => {
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
   const existingTower = getTowerAtPosition(x, y);
+
   if (existingTower) {
-    alert(`\n타워 정보: ${existingTower.name}\n데미지: ${existingTower.damage}\n공격 속도: ${existingTower.attackSpeed}\n사거리: ${existingTower.attackRange}\n`);
-  }
-  else
-  {    
-    clearPreviousTower();    
-    selectedTowerPosition = { x, y };    
-    drawTowerPlaceholder(x, y);    
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    const selectTowerHeight = selectTower.offsetHeight || 150;
+
+    const towerX = existingTower.x;
+    const towerY = existingTower.y;
+
+    let topPosition = towerY + 10;
+    if (topPosition + selectTowerHeight > windowHeight) {
+      topPosition = towerY - selectTowerHeight - 10;
+    }
+    if (topPosition < 0) {
+      topPosition = 10;
+    }
+
+    let leftPosition = towerX - selectTower.offsetWidth / 2;
+    if (leftPosition < 0) leftPosition = 10;
+    if (leftPosition + selectTower.offsetWidth > windowWidth) {
+      leftPosition = windowWidth - selectTower.offsetWidth - 10;
+    }
+
+    selectTower.style.left = `${leftPosition}px`;
+    selectTower.style.top = `${topPosition}px`;
+
+    selectTower.innerHTML = `
+      <h3>타워 정보</h3>
+      <p>이름: ${existingTower.name}</p>
+      <p>데미지: ${existingTower.damage}</p>
+      <p>공격 속도: ${existingTower.attackSpeed}</p>
+      <p>사거리: ${existingTower.attackRange}</p>
+    `;
+
+    if (existingTower.name === '모험가 타워') {
+      const reinforceButton = document.createElement('button');
+      reinforceButton.textContent = '강화';
+      reinforceButton.style.display = 'block';
+      reinforceButton.style.marginTop = '10px';
+      reinforceButton.addEventListener('click', () => {
+        const reinforceOptionsDiv = document.createElement('div');
+        reinforceOptionsDiv.id = "reinforceOptions";
+        reinforceOptionsDiv.style.marginTop = '10px';
+
+        const availableTowers = towersData.filter(tower => tower.name !== '모험가 타워');
+
+        if (availableTowers.length > 0) {
+          availableTowers.forEach(tower => {
+            const reinforceOptionButton = document.createElement('button');
+            reinforceOptionButton.textContent = `${tower.name} 강화`;
+            reinforceOptionButton.style.display = 'block';
+            reinforceOptionButton.style.marginBottom = '5px';
+            reinforceOptionButton.addEventListener('click', () => {
+              changeTower(existingTower, tower);
+              resetSelectTowerWindow();
+            });
+            reinforceOptionsDiv.appendChild(reinforceOptionButton);
+          });
+        } else {
+          reinforceOptionsDiv.innerHTML = '<p>강화 가능한 타워가 없습니다.</p>';
+        }
+
+        selectTower.appendChild(reinforceOptionsDiv);
+      });
+
+      selectTower.appendChild(reinforceButton);
+    }
+
+    selectTower.style.display = 'block';
+  } else {
+    selectTower.style.display = 'none';
+
+    clearPreviousTower();
+    selectedTowerPosition = { x, y };
+    drawTowerPlaceholder(x, y);
     buyTowerButton.disabled = false;
   }
 });
+
+function changeTower(currentTower, newTower) {
+  currentTower.name = newTower.name;
+  currentTower.damage = newTower.damage;
+  currentTower.attackRange = newTower.attackRange;
+  currentTower.attackSpeed = newTower.attackSpeed;
+
+  console.log(`타워가 ${newTower.name}(으)로 강화되었습니다.`);
+  updateTowerInventory();
+}
+
+function resetSelectTowerWindow() {
+  selectTower.innerHTML = '';
+  selectTower.style.display = 'none';
+}
 
 function getTowerAtPosition(x, y) {
   const towerWidth = 78;
