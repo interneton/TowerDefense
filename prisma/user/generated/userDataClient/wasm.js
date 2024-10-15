@@ -128,6 +128,7 @@ exports.Prisma.UsersScalarFieldEnum = {
   password: 'password',
   gold: 'gold',
   stage: 'stage',
+  best: 'best',
   createdAt: 'createdAt'
 };
 

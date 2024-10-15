@@ -171,7 +171,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\Projects\\JS\\TowerDefense\\prisma\\game\\generated\\gameDataClient",
+      "value": "D:\\Project\\JavaScript\\TowerDefense\\prisma\\game\\generated\\gameDataClient",
       "fromEnvVar": null
     },
     "config": {
@@ -185,11 +185,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\Projects\\JS\\TowerDefense\\prisma\\game\\schema.prisma",
+    "sourceFilePath": "D:\\Project\\JavaScript\\TowerDefense\\prisma\\game\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../../.env"
   },
   "relativePath": "../..",
   "clientVersion": "5.20.0",

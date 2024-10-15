@@ -37,5 +37,3 @@ const serverInstance = server.listen(PORT, async () => {
     console.error('게임 에셋 로드 실패:', error);
   }
 });
-
-

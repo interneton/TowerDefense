@@ -966,11 +966,13 @@ export namespace Prisma {
   export type UsersAvgAggregateOutputType = {
     gold: number | null
     stage: number | null
+    best: number | null
   }
 
   export type UsersSumAggregateOutputType = {
     gold: number | null
     stage: number | null
+    best: number | null
   }
 
   export type UsersMinAggregateOutputType = {
@@ -979,6 +981,7 @@ export namespace Prisma {
     password: string | null
     gold: number | null
     stage: number | null
+    best: number | null
     createdAt: Date | null
   }
 
@@ -988,6 +991,7 @@ export namespace Prisma {
     password: string | null
     gold: number | null
     stage: number | null
+    best: number | null
     createdAt: Date | null
   }
 
@@ -997,6 +1001,7 @@ export namespace Prisma {
     password: number
     gold: number
     stage: number
+    best: number
     createdAt: number
     _all: number
   }
@@ -1005,11 +1010,13 @@ export namespace Prisma {
   export type UsersAvgAggregateInputType = {
     gold?: true
     stage?: true
+    best?: true
   }
 
   export type UsersSumAggregateInputType = {
     gold?: true
     stage?: true
+    best?: true
   }
 
   export type UsersMinAggregateInputType = {
@@ -1018,6 +1025,7 @@ export namespace Prisma {
     password?: true
     gold?: true
     stage?: true
+    best?: true
     createdAt?: true
   }
 
@@ -1027,6 +1035,7 @@ export namespace Prisma {
     password?: true
     gold?: true
     stage?: true
+    best?: true
     createdAt?: true
   }
 
@@ -1036,6 +1045,7 @@ export namespace Prisma {
     password?: true
     gold?: true
     stage?: true
+    best?: true
     createdAt?: true
     _all?: true
   }
@@ -1132,6 +1142,7 @@ export namespace Prisma {
     password: string
     gold: number
     stage: number
+    best: number
     createdAt: Date
     _count: UsersCountAggregateOutputType | null
     _avg: UsersAvgAggregateOutputType | null
@@ -1160,6 +1171,7 @@ export namespace Prisma {
     password?: boolean
     gold?: boolean
     stage?: boolean
+    best?: boolean
     createdAt?: boolean
     inventory?: boolean | users$inventoryArgs<ExtArgs>
     _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
@@ -1172,6 +1184,7 @@ export namespace Prisma {
     password?: boolean
     gold?: boolean
     stage?: boolean
+    best?: boolean
     createdAt?: boolean
   }
 
@@ -1191,6 +1204,7 @@ export namespace Prisma {
       password: string
       gold: number
       stage: number
+      best: number
       createdAt: Date
     }, ExtArgs["result"]["users"]>
     composites: {}
@@ -1567,6 +1581,7 @@ export namespace Prisma {
     readonly password: FieldRef<"users", 'String'>
     readonly gold: FieldRef<"users", 'Int'>
     readonly stage: FieldRef<"users", 'Int'>
+    readonly best: FieldRef<"users", 'Int'>
     readonly createdAt: FieldRef<"users", 'DateTime'>
   }
     
@@ -2846,6 +2861,7 @@ export namespace Prisma {
     password: 'password',
     gold: 'gold',
     stage: 'stage',
+    best: 'best',
     createdAt: 'createdAt'
   };
 
@@ -2916,6 +2932,7 @@ export namespace Prisma {
     password?: StringFilter<"users"> | string
     gold?: IntFilter<"users"> | number
     stage?: IntFilter<"users"> | number
+    best?: IntFilter<"users"> | number
     createdAt?: DateTimeFilter<"users"> | Date | string
     inventory?: InventoryListRelationFilter
   }
@@ -2926,6 +2943,7 @@ export namespace Prisma {
     password?: SortOrder
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
     createdAt?: SortOrder
     inventory?: inventoryOrderByRelationAggregateInput
   }
@@ -2939,6 +2957,7 @@ export namespace Prisma {
     password?: StringFilter<"users"> | string
     gold?: IntFilter<"users"> | number
     stage?: IntFilter<"users"> | number
+    best?: IntFilter<"users"> | number
     createdAt?: DateTimeFilter<"users"> | Date | string
     inventory?: InventoryListRelationFilter
   }, "id" | "userId">
@@ -2949,6 +2968,7 @@ export namespace Prisma {
     password?: SortOrder
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
     createdAt?: SortOrder
     _count?: usersCountOrderByAggregateInput
     _avg?: usersAvgOrderByAggregateInput
@@ -2966,6 +2986,7 @@ export namespace Prisma {
     password?: StringWithAggregatesFilter<"users"> | string
     gold?: IntWithAggregatesFilter<"users"> | number
     stage?: IntWithAggregatesFilter<"users"> | number
+    best?: IntWithAggregatesFilter<"users"> | number
     createdAt?: DateTimeWithAggregatesFilter<"users"> | Date | string
   }
 
@@ -3032,6 +3053,7 @@ export namespace Prisma {
     password: string
     gold?: number
     stage?: number
+    best?: number
     createdAt?: Date | string
     inventory?: inventoryCreateNestedManyWithoutUsersInput
   }
@@ -3042,6 +3064,7 @@ export namespace Prisma {
     password: string
     gold?: number
     stage?: number
+    best?: number
     createdAt?: Date | string
     inventory?: inventoryUncheckedCreateNestedManyWithoutUsersInput
   }
@@ -3052,6 +3075,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inventory?: inventoryUpdateManyWithoutUsersNestedInput
   }
@@ -3062,6 +3086,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inventory?: inventoryUncheckedUpdateManyWithoutUsersNestedInput
   }
@@ -3072,6 +3097,7 @@ export namespace Prisma {
     password: string
     gold?: number
     stage?: number
+    best?: number
     createdAt?: Date | string
   }
 
@@ -3081,6 +3107,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3090,6 +3117,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3197,12 +3225,14 @@ export namespace Prisma {
     password?: SortOrder
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
     createdAt?: SortOrder
   }
 
   export type usersAvgOrderByAggregateInput = {
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
   }
 
   export type usersMaxOrderByAggregateInput = {
@@ -3211,6 +3241,7 @@ export namespace Prisma {
     password?: SortOrder
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3220,12 +3251,14 @@ export namespace Prisma {
     password?: SortOrder
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
     createdAt?: SortOrder
   }
 
   export type usersSumOrderByAggregateInput = {
     gold?: SortOrder
     stage?: SortOrder
+    best?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -3540,6 +3573,7 @@ export namespace Prisma {
     password: string
     gold?: number
     stage?: number
+    best?: number
     createdAt?: Date | string
   }
 
@@ -3549,6 +3583,7 @@ export namespace Prisma {
     password: string
     gold?: number
     stage?: number
+    best?: number
     createdAt?: Date | string
   }
 
@@ -3574,6 +3609,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3583,6 +3619,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     gold?: IntFieldUpdateOperationsInput | number
     stage?: IntFieldUpdateOperationsInput | number
+    best?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

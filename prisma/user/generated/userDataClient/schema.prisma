@@ -20,6 +20,7 @@ model users {
   password  String
   gold      Int      @default(10)
   stage     Int      @default(1)
+  best      Int      @default(1)
   createdAt DateTime @default(now())
 
   inventory inventory[]
