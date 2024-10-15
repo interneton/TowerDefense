@@ -35,14 +35,14 @@ export const getUserInfo = async (uuid) => {
 export const updateUserGold = async (uuid, gold) => {
     let user = await getUserInfo(uuid);
     user.gold = gold;
-    await RedisManager.set(uuid, JSON.stringify(user));
+    await RedisManager.setCache(uuid, JSON.stringify(user));
     return 'success';
 };
 
 export const updateUserInventory = async (uuid, inventory) => {
     let user = await getUserInfo(uuid);
     user.inventory = inventory;
-    await RedisManager.set(uuid, JSON.stringify(user));
+    await RedisManager.setCache(uuid, JSON.stringify(user));
     return 'success';
 };
 
@@ -53,7 +53,7 @@ export const updateTower = async (uuid, towerId, towerData) => {
     user.inventory[towerIndex] = { ...user.inventory[towerIndex], ...towerData };
     
     // Redis에 업데이트된 사용자 정보 저장
-    await RedisManager.set(uuid, JSON.stringify(user));
+    await RedisManager.setCache(uuid, JSON.stringify(user));
     
     return 'success';
   } catch (error) {

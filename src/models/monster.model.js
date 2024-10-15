@@ -70,7 +70,6 @@ export const spawnMonsters = async (uuid) => {
 
         // redis에 등장 몬스터 리스트를 저장함.
         user['spawnMonster'] = monsters
-        console.log(JSON.stringify(user))
 
         await RedisManager.setCache(uuid, JSON.stringify(user));
         console.log('등장 몬스터 생성 성공')
@@ -86,7 +85,6 @@ export const getMonsters = async (uuid) => {
     try {
         const user = await getUserInfo(uuid);
         const cachedMonsters = user.spawnMonster
-        console.log("getMonsters:"+ cachedMonsters)
         
         if (cachedMonsters.length) {
             return cachedMonsters
