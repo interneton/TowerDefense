@@ -38,7 +38,7 @@ export const spawnMonsters = async (uuid) => {
         }
 
         // stage를 기반으로 몬스터 레벨 스텟을 바꿈
-        monsterDatas = monsterDatas.map(monster => {
+        monsterDatas = monsterDatas.map((monster, index) => {
             const stat = monster.monsterStat
 
             return {
@@ -46,6 +46,7 @@ export const spawnMonsters = async (uuid) => {
                 name: monster.name,
                 moveSpeed: monster.moveSpeed,
                 hp: monster.hp + stat.hpUp * stage,
+                attack: 10 + 1 * stage,
                 gold: monster.gold + stat.goldUp * stage,
                 level : stage + 1
             }
@@ -61,7 +62,8 @@ export const spawnMonsters = async (uuid) => {
         }
 
         for(let i=0; i< stageInfo.totalSpawn; i++){
-            monsters.push(monsterDatas[Math.floor(Math.random() * monsterDatas.length)])
+            const monster = monsterDatas[Math.floor(Math.random() * monsterDatas.length)]
+            monsters.push({monster: monster, spawnId: i})
         }
         if(Math.random < stageInfo.spawnGoblin/100){
             goldGolin[level] = stage + 1
@@ -83,7 +85,7 @@ export const getMonsters = async (uuid) => {
     try {
         const cachedMonsters = JSON.parse(await redisClient.get("spawnMonster:"+uuid));
 
-        if (cachedMonsters) {
+        if (cachedMonsters.length) {
             return cachedMonsters
         }
 

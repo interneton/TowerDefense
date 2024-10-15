@@ -27,6 +27,7 @@ let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
+let spawnMonsters = [] // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
@@ -173,7 +174,12 @@ function placeBase() {
 }
 
 function spawnMonster() {
-  monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
+  console.log(spawnMonsters)
+  if(!spawnMonsters.length) return;
+  const {monster, spawnId} = spawnMonsters.shift()
+  console.log(spawnId + "번 몬스터 소환 ")
+  monsters.push(new Monster(monsterPath, monsterImages, monster.hp, monster.attack, monster.level, spawnId));
+  // monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
 function gameLoop() {
@@ -220,6 +226,8 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      console.log("처치 : " + monster.id)
+      sendEvent(32, {spawnId : monster.id})
       monsters.splice(i, 1);
     }
   }
@@ -300,6 +308,8 @@ Promise.all([
       baseHp = data.baseHp;
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
+      spawnMonsters = data.monsters;
+      console.log(spawnMonsters)
 
       if (!isInitGame) {
         initGame();
