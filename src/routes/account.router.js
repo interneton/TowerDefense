@@ -77,6 +77,8 @@ router.post('/account/login', async (req, res, next) => {
       UUID: user.id,
       accessToken: accessToken,
       refreshToken: refreshToken,
+      userId: user.userId,
+      best: user.best,
     });
   } catch (err) {
     next(err);
