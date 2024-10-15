@@ -11,6 +11,7 @@ export const initTowerHandler = async (userId, payload) => {
             user.inventory.push(data);
         }
     }
+    await updateUserInventory(userId, user.inventory);
     return user.inventory;
 };
 
@@ -27,6 +28,7 @@ export const purchaseTowerHandler = async (userId,payload) => {
     let data = {userId: userId, towerId: payload.towerId, level:1, exp:0};
     user.inventory.push(data);
     await updateUserGold(userId, user.gold);
+    await updateUserInventory(userId, user.inventory);
     return {status: 'success', message: '타워 구매 성공'};
 };
 

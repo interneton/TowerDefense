@@ -40,6 +40,13 @@ export const updateUserGold = async (userId, gold) => {
     return 'success';
 };
 
+export const updateUserInventory = async (userId, inventory) => {
+    let user = await getUserInfo(userId);
+    user.inventory = inventory;
+    await RedisManager.set(`user:${userId}`, JSON.stringify(user));
+    return 'success';
+};
+
 export const updateTower = async (userId, towerId, towerData) => {
   try {
     let user = await getUserInfo(userId);
