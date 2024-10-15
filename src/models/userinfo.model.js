@@ -16,7 +16,6 @@ export const addUserInfo = async (userId) => {
 
         // Redis에 사용자 정보 저장
         await RedisManager.setCache(`user:${userId}`, JSON.stringify(userinfos));
-        console.log(userinfos);
         return userinfos;
     } catch (error) {
         console.error('사용자 정보 추가 중 오류 발생:', error);
@@ -37,14 +36,14 @@ export const getUserInfo = async (userId) => {
 export const updateUserGold = async (userId, gold) => {
     let user = await getUserInfo(userId);
     user.gold = gold;
-    await RedisManager.set(`user:${userId}`, JSON.stringify(user));
+    await RedisManager.setCache(`user:${userId}`, JSON.stringify(user));
     return 'success';
 };
 
 export const updateUserInventory = async (userId, inventory) => {
     let user = await getUserInfo(userId);
     user.inventory = inventory;
-    await RedisManager.set(`user:${userId}`, JSON.stringify(user));
+    await RedisManager.setCache(`user:${userId}`, JSON.stringify(user));
     return 'success';
 };
 
