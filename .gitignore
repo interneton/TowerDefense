@@ -119,3 +119,6 @@ dist
 # IDE - Jetbrains
 .vscode/*
 /.vscode
+
+# prisma generated 무시
+**/generated/
