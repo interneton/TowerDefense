@@ -179,9 +179,7 @@ function placeInitialTowers() {
     tower.draw(ctx, towerImage);
   }
 
-  sendEvent2(21, { towerInven: towers }).then((data) => {
-    console.log(data);
-  });
+  sendEvent(21, { towerInven: towers });
 
   updateTowerInventory();
 }
@@ -348,6 +346,8 @@ Promise.all([
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
       spawnMonsters = data.monsters;
+
+      console.log(data.towers);
       console.log(spawnMonsters);
       stagesData.push(data.stage);
 

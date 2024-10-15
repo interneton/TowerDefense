@@ -1,5 +1,6 @@
 import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
 import { RedisManager, redisClient } from '../init/redis.js';
+import { getUserInfo } from '../models/userinfo.model.js';
 
 const stages = {};
 //redis에 스테이지 정보 동기화
@@ -35,10 +36,14 @@ export const clearStage = async (uuid) => {
 
 export const getStage = async (uuid) => {
   try {
-    const cachedStage = await RedisManager.getCache(`stage:${uuid}`);
-    if (cachedStage) {
+    const user = await getUserInfo(uuid);
+    const cachedStage = user.stage;
+    console.log(JSON.stringify(user));
+
+    if (cachedStage.length) {
       return cachedStage;
     }
+
     return null;
   } catch (error) {
     console.error('스테이지 조회 중 오류 발생:', error);

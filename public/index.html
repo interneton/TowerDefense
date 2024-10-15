@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -31,6 +31,10 @@
         font-size: 16px;
         cursor: pointer;
       }
+      .button-container h2 {
+        color: white;
+        margin: 5px 0;
+      }
     </style>
   </head>
   <body>
@@ -43,20 +47,41 @@
     <canvas id="gameCanvas" width="1920" height="1080"></canvas>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
-      document
-        .getElementById("registerButton")
-        .addEventListener("click", () => {
-          window.location.href = "register.html";
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = '로그아웃';
+        logoutButton.addEventListener('click', () => {
+          localStorage.clear();
+          location.reload();
         });
 
-      document.getElementById("loginButton").addEventListener("click", () => {
-        window.location.href = "login.html";
+        const text = document.createElement('h2');
+        text.textContent = `${localStorage.getItem('userId')}`;
+        const text2 = document.createElement('h2');
+        text2.textContent = `최고 도달 스테이지 : ${localStorage.getItem('best')}`;
+
+        const container = document.querySelector('.button-container');
+        container.appendChild(logoutButton);
+        container.appendChild(text);
+        container.appendChild(text2);
+
+        document.getElementById('loginButton').style.display = 'none';
+        document.getElementById('registerButton').style.display = 'none';
+      }
+
+      document.getElementById('registerButton').addEventListener('click', () => {
+        window.location.href = 'register.html';
       });
 
-      document.getElementById("playButton").addEventListener("click", () => {
-        document.querySelector(".button-container").style.display = "none";
-        document.getElementById("gameCanvas").style.display = "block";
-        import("./src/game.js");
+      document.getElementById('loginButton').addEventListener('click', () => {
+        window.location.href = 'login.html';
+      });
+
+      document.getElementById('playButton').addEventListener('click', () => {
+        document.querySelector('.button-container').style.display = 'none';
+        document.getElementById('gameCanvas').style.display = 'block';
+        import('./src/game.js');
       });
     </script>
   </body>
