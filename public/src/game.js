@@ -152,10 +152,9 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-  /* 
-    타워를 초기에 배치하는 함수입니다.
-    무언가 빠진 코드가 있는 것 같지 않나요? 
-  */
+  sendEvent2(21, null).then((data) => {
+    console.log(data);
+  });
   let baseTower = getTower("모험가 타워");
 
   for (let i = 0; i < numOfInitialTowers; i++) {
