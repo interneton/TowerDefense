@@ -42,7 +42,7 @@ export const gameStart = async (uuid, payload, socket) => {
 // TODO: game.js에서 게임 오버 부분에 gameEnd 소켓 보내는 구문 추가 sendEvent(3, {});
 export const gameEnd = async (uuid, payload) => {
   const { initData } = await getGameAssets();
-  const { userGold } = initData.data[0]; // 골드는 초기값으로
+  const { userGold } = initData.data; // 골드는 초기값으로
   const { stage } = await RedisManager.getUserData(uuid); // 도달 스테이지를 캐시에서 얻어와서 저장
 
   // DB에 저장
