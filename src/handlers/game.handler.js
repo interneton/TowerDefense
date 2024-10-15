@@ -58,7 +58,7 @@ export const gameStart = async (uuid, payload, socket) => {
 
   // TODO: 유저 데이터 저장해두기
   // const data = {};
-  // await RedisManager.setCache(uuid, data);
+  // await RedisManager.set(uuid, data);
 
   // TODO: setStage 필요
 
@@ -67,6 +67,7 @@ export const gameStart = async (uuid, payload, socket) => {
 
 export const gameEnd = async (uuid, payload) => {
   // TODO: 게임 종료 시 데이터 저장
+  // 캐시만 지우고, db에는 초기 데이터로 등록
   const { gold, stage } = payload; // towers, baseHp,
 
   await userDataClient.users.update({
