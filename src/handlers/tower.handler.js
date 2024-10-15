@@ -3,11 +3,31 @@ import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.m
 import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
-    return null;
+    let user = await getUserInfo(userId);
+    if(user.inventory.length === 0) {
+        for(let i = 0; i < 3; i++) {
+            let randomTowerId = Math.floor(Math.random() * 4) + 6;
+            let data = {userId: userId, towerId: randomTowerId, level:1, exp:0};
+            user.inventory.push(data);
+        }
+    }
+    return user.inventory;
 };
 
-export const purchaseTowerHandler = (userId) => {
-    return null; 
+export const purchaseTowerHandler = async (userId,payload) => {
+    let user = await getUserInfo(userId);
+    let tower = await getTower(payload.towerId);
+    if(!user || !tower) {
+        return {status: 'fail', message: '타워 정보를 찾을 수 없습니다.'};
+    }
+    if(payload.gold < tower.cost) {
+        return {status: 'fail', message: '골드가 부족합니다.'};
+    }
+    user.gold -= tower.cost;
+    let data = {userId: userId, towerId: payload.towerId, level:1, exp:0};
+    user.inventory.push(data);
+    await updateUserGold(userId, user.gold);
+    return {status: 'success', message: '타워 구매 성공'};
 };
 
 export const upgradeTowerHandler = async (userId, payload) => {
