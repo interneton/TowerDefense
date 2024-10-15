@@ -21,7 +21,7 @@ export const handleDisconnect = (socket, uuid) => {
   console.log('Current users:', getUsers());
 };
 
-export const handleEvent = (io, socket, data) => {
+export const handleEvent = async (io, socket, data) => {
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     socket.emit('response', { status: 'fail', message: 'Client version mismatch' });
     return;
@@ -33,11 +33,12 @@ export const handleEvent = (io, socket, data) => {
     return;
   }
 
-  const response = handler(data.userId, data.payload, socket);
-  if (response  && response.broadcast) {
+  const response = await handler(data.userId, data.payload, socket);
+  if (response.broadcast) {
     io.emit('response', 'broadcast');
     return;
   }
+  
   socket.emit('response', response);
 };
 
