@@ -86,6 +86,7 @@ export const getMonsters = async (uuid) => {
   try {
     const user = await getUserInfo(uuid);
     const cachedMonsters = user.spawnMonster;
+    console.log(JSON.stringify(user));
 
     if (cachedMonsters.length) {
       return cachedMonsters;
