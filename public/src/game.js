@@ -174,12 +174,9 @@ function placeBase() {
 }
 
 function spawnMonster() {
-  console.log(spawnMonsters)
   if(!spawnMonsters.length) return;
   const {monster, spawnId} = spawnMonsters.shift()
-  console.log(spawnId + "번 몬스터 소환 ")
   monsters.push(new Monster(monsterPath, monsterImages, monster.hp, monster.attack, monster.level, spawnId));
-  // monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
 function gameLoop() {
@@ -230,6 +227,11 @@ function gameLoop() {
       sendEvent(32, {spawnId : monster.id})
       monsters.splice(i, 1);
     }
+  }
+
+  // 게임 클리어
+  if(!spawnMonsters.length && !monsters.length){
+    alert("스테이지 클리어!")
   }
 
   if (selectedTowerPosition) {
