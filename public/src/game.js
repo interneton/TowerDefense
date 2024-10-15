@@ -155,9 +155,7 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-  sendEvent2(21, null).then((data) => {
-    console.log(data);
-  });
+
   let baseTower = getTower('모험가 타워');
 
   for (let i = 0; i < numOfInitialTowers; i++) {
@@ -178,6 +176,11 @@ function placeInitialTowers() {
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
+
+  sendEvent2(21, { towerInven: towers}).then((data) => {
+    console.log(data);
+  });
+
   updateTowerInventory();
 }
 
