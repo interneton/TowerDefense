@@ -27,6 +27,7 @@ let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
+let spawnMonsters = [] // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
@@ -151,10 +152,9 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-  /* 
-    타워를 초기에 배치하는 함수입니다.
-    무언가 빠진 코드가 있는 것 같지 않나요? 
-  */
+  sendEvent2(21, null).then((data) => {
+    console.log(data);
+  });
   let baseTower = getTower("모험가 타워");
 
   for (let i = 0; i < numOfInitialTowers; i++) {
@@ -173,7 +173,9 @@ function placeBase() {
 }
 
 function spawnMonster() {
-  monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
+  if(!spawnMonsters.length) return;
+  const {monster, spawnId} = spawnMonsters.shift()
+  monsters.push(new Monster(monsterPath, monsterImages, monster.hp, monster.attack, monster.level, spawnId));
 }
 
 function gameLoop() {
@@ -220,8 +222,22 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      console.log("처치 : " + monster.id)
+      sendEvent(32, {spawnId : monster.id})
       monsters.splice(i, 1);
     }
+  }
+
+  // 게임 클리어
+  if(!spawnMonsters.length && !monsters.length){
+    if (window.confirm('스테이지 클리어!?'))
+      {
+        window.location.href = 'index.html';
+      }
+      else
+      {
+        window.location.href = 'index.html';
+      }
   }
 
   if (selectedTowerPosition) {
@@ -300,6 +316,8 @@ Promise.all([
       baseHp = data.baseHp;
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
+      spawnMonsters = data.monsters;
+      console.log(spawnMonsters)
 
       console.log(userGold);
       if (!isInitGame) {
@@ -385,14 +403,36 @@ canvas.addEventListener('click', (event) => {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
-  clearPreviousTower();
-
-  selectedTowerPosition = { x, y };
-
-  drawTowerPlaceholder(x, y);
-
-  buyTowerButton.disabled = false;
+  const existingTower = getTowerAtPosition(x, y);
+  if (existingTower) {
+    alert(`\n타워 정보: ${existingTower.name}\n데미지: ${existingTower.damage}\n공격 속도: ${existingTower.attackSpeed}\n사거리: ${existingTower.attackRange}\n`);
+  }
+  else
+  {    
+    clearPreviousTower();    
+    selectedTowerPosition = { x, y };    
+    drawTowerPlaceholder(x, y);    
+    buyTowerButton.disabled = false;
+  }
 });
+
+function getTowerAtPosition(x, y) {
+  const towerWidth = 78;
+  const towerHeight = 150;
+
+  for (let i = 0; i < towers.length; i++) {
+    const tower = towers[i];
+
+    const isWithinX = x >= tower.x && x <= (tower.x + towerWidth);
+    const isWithinY = y >= tower.y && y <= (tower.y + towerHeight);
+
+    if (isWithinX && isWithinY) {
+      return tower;
+    }
+  }
+
+  return null;
+}
 
 function drawTowerPlaceholder(x, y) {
   const towerWidth = 100;
