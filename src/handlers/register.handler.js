@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { addUser } from '../models/user.model.js';
-import { addUserInfo } from '../models/userinfo.model.js';
+import { addUserInfo, getUserInfo } from '../models/userinfo.model.js';
 import { handleConnection, handleDisconnect, handleEvent, issueToken } from './helper.js';
 import { CLIENT_VERSION } from '../constants.js';
 
@@ -26,6 +26,12 @@ const registerHandler = (io) => {
 
     const userUUID = decodedToken.id;
 
+    //플레이어가 이미 있는 사용하고 있는 계정에 경우 로그인화면으로 돌아감.
+    const userExist = await getUserInfo(userUUID);
+    if (userExist) {
+      socket.emit('stop', { message: '다른 클라이언트가 사용하고 있는 계정입니다.' });
+      return 0;
+    }
     await addUserInfo(userUUID); // 사용자 추가
 
     // accessToken이 만료된 경우.
