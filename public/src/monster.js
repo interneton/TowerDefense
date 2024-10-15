@@ -18,7 +18,8 @@ export class Monster {
     this.maxHp = hp; // 몬스터의 현재 HP
     this.hp = this.maxHp; // 몬스터의 현재 HP
     this.attackPower = attack; // 몬스터의 공격력 (기지에 가해지는 데미지)
-    this.id = id;    
+    this.id = id;
+    this.mapOut = false;
     // this.init(level);
   }
 
@@ -48,6 +49,7 @@ export class Monster {
     } else {
       const isDestroyed = base.takeDamage(this.attackPower); // 기지에 도달하면 기지에 데미지를 입힙니다!
       this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
+      this.mapOut = true; // 몬스터가 밖으로 나갔을 때는 돈을 지급해서는 안됨.
       return isDestroyed;
     }
   }
