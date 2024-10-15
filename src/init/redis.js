@@ -81,7 +81,7 @@ export const RedisManager = {
 
   cacheUserInventory: async (userId, inventory) => {
     try {
-      const inventoryKey = `game:inventory:${userId}`;
+      const inventoryKey = `game:user:${userId}`;
       await redisClient.set(inventoryKey, JSON.stringify(inventory));
       console.log(`사용자 인벤토리 캐시 완료: ${userId}`);
     } catch (error) {
@@ -91,7 +91,7 @@ export const RedisManager = {
 
   getUserInventory: async (userId) => {
     try {
-      const inventoryKey = `game:inventory:${userId}`;
+      const inventoryKey = `game:user:${userId}`;
       const inventoryData = await redisClient.get(inventoryKey);
       return inventoryData ? JSON.parse(inventoryData) : null;
     } catch (error) {
