@@ -76,7 +76,7 @@ export const gameEnd = async (uuid, payload) => {
     where: { id: uuid },
     data: {
       gold: userGold,
-      stage: stage,
+      stage: +stage,
     },
   });
 

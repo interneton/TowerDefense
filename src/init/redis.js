@@ -57,46 +57,4 @@ export const RedisManager = {
       console.error('캐시 만료 시간 업데이트 중 오류 발생:', error);
     }
   },
-
-  cacheUserData: async (userId, gold, stage) => {
-    try {
-      const userKey = `game:user:${userId}`;
-      await redisClient.hmset(userKey, { gold, stage });
-      console.log(`사용자 데이터 캐시 완료: ${userId}`);
-    } catch (error) {
-      console.error('사용자 데이터 캐시 중 오류 발생:', error);
-    }
-  },
-
-  getUserData: async (userId) => {
-    try {
-      const userKey = `game:user:${userId}`;
-      const userData = await redisClient.hgetall(userKey);
-      return userData && Object.keys(userData).length ? userData : null;
-    } catch (error) {
-      console.error('사용자 데이터 가져오기 중 오류 발생:', error);
-      return null;
-    }
-  },
-
-  cacheUserInventory: async (userId, inventory) => {
-    try {
-      const inventoryKey = `game:user:${userId}`;
-      await redisClient.set(inventoryKey, JSON.stringify(inventory));
-      console.log(`사용자 인벤토리 캐시 완료: ${userId}`);
-    } catch (error) {
-      console.error('사용자 인벤토리 캐시 중 오류 발생:', error);
-    }
-  },
-
-  getUserInventory: async (userId) => {
-    try {
-      const inventoryKey = `game:user:${userId}`;
-      const inventoryData = await redisClient.get(inventoryKey);
-      return inventoryData ? JSON.parse(inventoryData) : null;
-    } catch (error) {
-      console.error('사용자 인벤토리 가져오기 중 오류 발생:', error);
-      return null;
-    }
-  },
 };

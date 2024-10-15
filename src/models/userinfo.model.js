@@ -1,6 +1,6 @@
 import { userDataClient } from '../utils/prisma/index.js';
 import { RedisManager } from '../init/redis.js';
-
+import { getGameAssets } from '../init/assets.js';
 export const addUserInfo = async (uuid) => {
   try {
     let user = await userDataClient.users.findUnique({
@@ -11,7 +11,9 @@ export const addUserInfo = async (uuid) => {
         inventory: true,
       },
     });
+    const { initData } = await getGameAssets();
 
+    user.baseHp = initData.data.baseHp;
     // Redis에 사용자 정보 저장
     await RedisManager.setCache(uuid, JSON.stringify(user));
     return user;
