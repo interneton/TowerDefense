@@ -250,6 +250,8 @@ function gameLoop() {
   if (!spawnMonsters.length && !monsters.length && isGameEnd) {
     isGameEnd = false;
     if (window.confirm('스테이지 클리어!?')) {
+      // sendEvent(11, { stage:  });
+
       location.reload();
     } else {
       location.href = 'index.html';

@@ -5,6 +5,7 @@ import { gameDataClient } from '../utils/prisma/index.js';
 export const moveStageHandler = async (uuid, payload) => {
   // 유저의 현재 스테이지 배열을 가져오고, 최대 스테이지 ID를 찾는다.
   let currentStages = getStage(uuid);
+
   if (!currentStages) {
     await createStage(uuid);
     currentStage = getStage(uuid);
@@ -50,4 +51,7 @@ export const moveStageHandler = async (uuid, payload) => {
     handlerId: 11,
     payload: { targetStage: payload.targetStage },
   };
+
+  // Socket.emit()
+  // 서버에서 클라이언트로 데이터 보냄 -> 스테이지 클리어 -> 클라이언트 (stage + 1) -> 서버로 보냄 (stage + 1) -> 서버가 userData에서 스테이지 정보 변경
 };
