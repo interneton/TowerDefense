@@ -3,7 +3,7 @@ import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import { RedisManager } from '../init/redis.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
-import { spawnMonsters } from '../models/monster.model.js'
+import { spawnMonsters } from '../models/monster.model.js';
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
@@ -25,13 +25,12 @@ export const gameStart = async (uuid, payload, socket) => {
   }
 
   // redis에 업로드하는 함수들
-  const [tower, towerStat, monsters] = await Promise.all(
-    [
-      syncTowersToRedis(socket),
-      syncTowerStatsToRedis(),
-      spawnMonsters(uuid)
-  ])
-  result["monsters"] = monsters
+  const [tower, towerStat, monsters] = await Promise.all([
+    syncTowersToRedis(socket),
+    syncTowerStatsToRedis(),
+    spawnMonsters(uuid),
+  ]);
+  result['monsters'] = monsters;
 
   let user = await RedisManager.getUserData(uuid);
   if (!user) {
@@ -47,21 +46,21 @@ export const gameStart = async (uuid, payload, socket) => {
     towers = await userDataClient.inventory.findMany({
       where: {
         userId: uuid,
-      }
+      },
     });
   }
 
   // 저장되어있는 값이 있으면 초기 정보에 덮어 씌우기
   if (user) {
     result.userGold = user.gold;
-    result.stage = user.stage
+    result.stage = user.stage;
   }
 
   if (towers) {
     result.towers = towers;
   }
 
-  await RedisManager.cacheUserData(uuid, result.userGold, result.stage)
+  await RedisManager.cacheUserData(uuid, result.userGold, result.stage);
 
   socket.emit('gameStart', result);
 };

@@ -161,7 +161,17 @@ function placeInitialTowers() {
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
 
-    const tower = new Tower(x, y, baseTower.id, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+    const tower = new Tower(
+      x,
+      y,
+      baseTower.id,
+      baseTower.name,
+      baseTower.damage,
+      baseTower.attackRange,
+      baseTower.attackSpeed,
+      baseTower.cost,
+      1,
+    );
 
     towers.push(tower);
     tower.draw(ctx, towerImage);
@@ -331,7 +341,6 @@ Promise.all([
       spawnMonsters = data.monsters;
       console.log(spawnMonsters);
 
-      console.log(userGold);
       if (!isInitGame) {
         initGame();
       }
@@ -402,7 +411,6 @@ buyTowerButton.addEventListener('click', () => {
     }
     placeNewTower(selectedTowerPosition);
 
-
     buyTowerButton.disabled = true;
     clearPreviousTower();
   } else {
@@ -412,14 +420,14 @@ buyTowerButton.addEventListener('click', () => {
 
 document.body.appendChild(buyTowerButton);
 
-const selectTower = document.createElement("div");
-selectTower.id = "selectTower";
-selectTower.style.position = "absolute";
-selectTower.style.width = "200px";
-selectTower.style.padding = "10px";
-selectTower.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-selectTower.style.border = "1px solid black";
-selectTower.style.display = "none";
+const selectTower = document.createElement('div');
+selectTower.id = 'selectTower';
+selectTower.style.position = 'absolute';
+selectTower.style.width = '200px';
+selectTower.style.padding = '10px';
+selectTower.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+selectTower.style.border = '1px solid black';
+selectTower.style.display = 'none';
 
 document.body.appendChild(selectTower);
 
@@ -472,24 +480,22 @@ canvas.addEventListener('click', (event) => {
     reinforceButton.style.marginTop = '10px';
     reinforceButton.addEventListener('click', () => {
       const reinforceOptionsDiv = document.createElement('div');
-      reinforceOptionsDiv.id = "reinforceOptions";
+      reinforceOptionsDiv.id = 'reinforceOptions';
       reinforceOptionsDiv.style.marginTop = '10px';
 
-      const availableTowers = towersData.filter(tower => tower.name !== '모험가 타워');
+      const availableTowers = towersData.filter((tower) => tower.name !== '모험가 타워');
 
       if (availableTowers.length > 0) {
-        availableTowers.forEach(tower => {
+        availableTowers.forEach((tower) => {
           const reinforceOptionButton = document.createElement('button');
           reinforceOptionButton.textContent = `${tower.name} 강화 ${tower.cost}원`;
           reinforceOptionButton.style.display = 'block';
           reinforceOptionButton.style.marginBottom = '5px';
           reinforceOptionButton.addEventListener('click', () => {
-
-            if(userGold < tower.cost)
-              {
-                alert(`${tower.cost - userGold} 금액이 부족합니다`);
-                return;
-              }
+            if (userGold < tower.cost) {
+              alert(`${tower.cost - userGold} 금액이 부족합니다`);
+              return;
+            }
 
             changeTower(existingTower, tower);
             resetSelectTowerWindow();
@@ -533,7 +539,7 @@ function sellTower(tower, salePrice) {
   if (towerIndex !== -1) {
     towers.splice(towerIndex, 1); // 타워 리스트에서 제거
   }
-  
+
   // 골드 추가
   userGold += +salePrice;
   console.log(`타워가 판매되었습니다. ${salePrice} 골드 추가됨. 현재 골드: ${userGold}`);
@@ -553,7 +559,7 @@ function changeTower(currentTower, newTower) {
   currentTower.attackSpeed = newTower.attackSpeed;
 
   console.log(`타워가 ${newTower.name}(으)로 강화되었습니다.`);
-                
+
   userGold -= newTower.cost;
   sendEvent(23, { towerInven: towers, towercost: newTower.cost });
 
@@ -621,9 +627,19 @@ function placeNewTower(position) {
   const centerX = x - towerWidth / 2;
   const centerY = y - towerHeight / 2;
 
-  let baseTower = getTower("모험가 타워"); 
+  let baseTower = getTower('모험가 타워');
 
-  const tower = new Tower(centerX, centerY, baseTower.id, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+  const tower = new Tower(
+    centerX,
+    centerY,
+    baseTower.id,
+    baseTower.name,
+    baseTower.damage,
+    baseTower.attackRange,
+    baseTower.attackSpeed,
+    baseTower.cost,
+    1,
+  );
   towers.push(tower);
   tower.draw(ctx, towerImage);
 
