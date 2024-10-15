@@ -160,7 +160,7 @@ function placeInitialTowers() {
 
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
-    const tower = new Tower(x, y, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+    const tower = new Tower(x, y, "name", baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
@@ -476,7 +476,7 @@ function placeNewTower(position) {
 
   let baseTower = getTower("모험가 타워"); 
 
-  const tower = new Tower(centerX, centerY, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+  const tower = new Tower(centerX, centerY, "name", baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
   towers.push(tower);
   tower.draw(ctx, towerImage);
 
