@@ -1,7 +1,6 @@
 import { gameDataClient } from '../utils/prisma/index.js';
 import { userDataClient } from '../utils/prisma/index.js';
-import { redisClient, RedisManager } from '../init/redis.js';
-import { getUserInfo } from '../models/userinfo.model.js'
+import { redisClient } from '../init/redis.js';
 
 // redis에 몬스터 정보 업로드
 export const initMonsters = async () => {
@@ -23,8 +22,11 @@ export const spawnMonsters = async (uuid) => {
         let monsterDatas = JSON.parse(await redisClient.get("monsters"))
 
         // 현재 유저의 stage를 가져옴
-        const user = await getUserInfo(uuid);
-        if(!user) throw  new Error("해당 유저 정보를 접속자 중에서 찾을 수 없습니다.")
+        const user = await userDataClient.users.findUnique({
+            where: {
+                id: uuid
+            },
+        });
         const stage = user.stage - 1
 
         // stage의 정보가 도달 스테이지에 따라 변경되야함.
@@ -69,9 +71,7 @@ export const spawnMonsters = async (uuid) => {
         }
 
         // redis에 등장 몬스터 리스트를 저장함.
-        user['spawnMonster'] = monsters
-
-        await RedisManager.setCache(uuid, JSON.stringify(user));
+        await redisClient.set("spawnMonster:"+uuid, JSON.stringify(monsters));
         console.log('등장 몬스터 생성 성공')
         
         return monsters
@@ -83,27 +83,13 @@ export const spawnMonsters = async (uuid) => {
 
 export const getMonsters = async (uuid) => {
     try {
-        const user = await getUserInfo(uuid);
-        const cachedMonsters = user.spawnMonster
-        
+        const cachedMonsters = JSON.parse(await redisClient.get("spawnMonster:"+uuid));
+
         if (cachedMonsters.length) {
             return cachedMonsters
         }
 
         return null;
-    } catch (error) {
-        console.error('몬스터 리스트 조회 오류:', error);
-        throw error;
-    }
-};
-
-export const setMonsters = async (uuid, monsters) => {
-    try {
-        const user = await getUserInfo(uuid);
-        user['spawnMonster'] = monsters
-        await redisClient.set(uuid, JSON.stringify(user));
-
-        return {message:"Success"};
     } catch (error) {
         console.error('몬스터 리스트 조회 오류:', error);
         throw error;
