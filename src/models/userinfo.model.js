@@ -1,5 +1,5 @@
 import { userDataClient } from '../utils/prisma/index.js';
-import RedisManager from '../init/redis.js';
+import { RedisManager } from '../init/redis.js';
 
 export const addUserInfo = async (userId) => {
     try {

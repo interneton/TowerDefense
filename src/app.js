@@ -4,7 +4,6 @@ import initSocket from './init/socket.js';
 import { loadGameAssets } from './init/assets.js';
 import cookieParser from 'cookie-parser';
 import ErrorHandlerMiddleware from './middlewares/error-handler.middleware.js';
-import redisClient from './init/redis.js';
 
 import accountRouter from './routes/account.router.js';
 
