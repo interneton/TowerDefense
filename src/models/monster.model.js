@@ -81,7 +81,7 @@ export const spawnMonsters = async (uuid) => {
 
 export const getMonsters = async (uuid) => {
     try {
-        const cachedMonsters = await redisClient.get("spawnMonster:"+uuid);
+        const cachedMonsters = JSON.parse(await redisClient.get("spawnMonster:"+uuid));
 
         if (cachedMonsters) {
             return cachedMonsters
