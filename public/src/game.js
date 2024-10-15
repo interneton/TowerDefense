@@ -2,6 +2,7 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import { CLIENT_VERSION } from './constants.js';
+import { resetAccount } from '../services/fatchAPI.js';
 
 const token = localStorage.getItem('accessToken');
 if (!token) {
@@ -155,7 +156,6 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-
   let baseTower = getTower('모험가 타워');
 
   for (let i = 0; i < numOfInitialTowers; i++) {
@@ -177,7 +177,7 @@ function placeInitialTowers() {
     tower.draw(ctx, towerImage);
   }
 
-  sendEvent2(21, { towerInven: towers}).then((data) => {
+  sendEvent2(21, { towerInven: towers }).then((data) => {
     console.log(data);
   });
 
@@ -238,8 +238,13 @@ function gameLoop() {
         /* 게임 오버 */
         isGameEnd = false;
         alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
-        location.reload();
-        sendEvent(3, {});
+        resetAccount({ userId }).then((res) => {
+          if (!res) {
+            return;
+          }
+          sendEvent(3, {});
+          location.reload();
+        });
       }
       monster.draw(ctx);
     } else {

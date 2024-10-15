@@ -71,9 +71,13 @@ router.post('/account/login', async (req, res, next) => {
     const refreshToken = createRefreshToken(user.id);
     const accessToken = createAccessToken(user.id);
 
-    return res
-      .status(200)
-      .json({ message: '로그인 성공', isLogin: true, UUID: user.id, accessToken: accessToken, refreshToken: refreshToken});
+    return res.status(200).json({
+      message: '로그인 성공',
+      isLogin: true,
+      UUID: user.id,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
   } catch (err) {
     next(err);
   }
@@ -107,6 +111,71 @@ router.delete('/account', authMiddleware, async (req, res, next) => {
 
 /** 사용자 전체 조회 */
 router.get('/account/all', async (req, res, next) => {
+  try {
+    const users = await userDataClient.users.findMany({
+      select: {
+        id: true,
+        userId: true,
+        createdAt: true,
+      },
+    });
+
+    if (users.length < 0) {
+      throw new Error('AccountNotFound');
+    }
+
+    return res.status(200).json({ data: users });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/** 사용자 초기화 */
+router.post('/account/reset', async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    const user = await userDataClient.users.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ errorMessage: '유저를 찾을 수 없습니다.' });
+    }
+
+    await userDataClient.inventory.deleteMany({
+      where: { userId: userId },
+    });
+
+    if (user.stage > user.best) {
+      await userDataClient.users.update({
+        where: { id: userId },
+        data: {
+          best: user.stage,
+        },
+      });
+    }
+
+    // Users 인벤토리에 모험가를 하나 추가.
+    const initInventory = await userDataClient.inventory.create({
+      data: {
+        userId: userId,
+        towerId: 1,
+        stage: 1,
+        level: 1,
+        exp: 0,
+      },
+    });
+
+    return res
+      .status(201)
+      .json({ data: { userId: user.userId, message: '요청한 사용자가 초기화되었습니다.' } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/** 사용자 최고 기록 */
+router.post('/account/best', async (req, res, next) => {
   try {
     const users = await userDataClient.users.findMany({
       select: {

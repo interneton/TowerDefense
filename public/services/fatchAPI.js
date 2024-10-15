@@ -81,3 +81,16 @@ export async function loginAccount(body) {
   }
   return res.json();
 }
+
+/** 계정 초기화 */
+export async function resetAccount(body) {
+  const res = await fetchAPI('POST', '/api/account/reset', body, false);
+  // 유효성 검증 실패
+  if (res.status === 401) {
+    alert(res.message);
+  }
+  if (res.status === 404) {
+    alert(res.message);
+  }
+  return res.json();
+}
