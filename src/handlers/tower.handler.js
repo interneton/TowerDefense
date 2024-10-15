@@ -5,18 +5,13 @@ import {
   updateUserInventory,
 } from '../models/userinfo.model.js';
 import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.model.js';
-import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
   let user = await getUserInfo(userId);
-  if (user.inventory.length < 3) {
-    for (let i = 0; i < 4 - user.inventory.length; i++) {
-      let randomTowerId = Math.floor(Math.random() * 4) + 6;
-      let data = { userId: userId, towerId: randomTowerId, level: 1, exp: 0 };
-      user.inventory.push(data);
-    }
-    await updateUserInventory(userId, user.inventory);
-  }
+  user.inventory = payload.towerInven;
+
+  await updateUserInventory(userId, user.inventory);
+  
   return { status: 'success', message: '타워 초기화 성공', inventory: user.inventory };
 };
 
@@ -41,8 +36,8 @@ export const purchaseTowerHandler = async (userId,payload) => {
 
 export const upgradeTowerHandler = async (userId, payload) => {
     let user = await getUserInfo(userId);
-    user.inventory = payload.towers;
-    user.gold -= payload.cost;
+    user.inventory = payload.towerInven;
+    user.gold -= payload.towercost;
     await updateUserGold(userId, user.gold);
     await updateUserInventory(userId, user.inventory);
     

@@ -161,17 +161,7 @@ function placeInitialTowers() {
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
 
-    const tower = new Tower(
-      x,
-      y,
-      baseTower.id,
-      baseTower.name,
-      baseTower.damage,
-      baseTower.attackRange,
-      baseTower.attackSpeed,
-      baseTower.cost,
-      1,
-    );
+    const tower = new Tower(x, y, baseTower.id, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
 
     towers.push(tower);
     tower.draw(ctx, towerImage);
@@ -344,7 +334,8 @@ Promise.all([
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
       spawnMonsters = data.monsters;
-      console.log(spawnMonsters);
+
+      console.log(data.towers);
 
       if (!isInitGame) {
         initGame();
