@@ -167,9 +167,7 @@ function placeInitialTowers() {
     tower.draw(ctx, towerImage);
   }
 
-  sendEvent2(21, { towerInven: towers }).then((data) => {
-    console.log(data);
-  });
+  sendEvent(21, { towerInven: towers });
 
   updateTowerInventory();
 }
