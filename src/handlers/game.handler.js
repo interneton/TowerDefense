@@ -2,7 +2,6 @@ import { getGameAssets } from '../init/assets.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import redisClient from '../init/redis.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
-import RedisManager from '../init/redis.js';
 import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
 
 export const gameStart = async (uuid, payload, socket) => {
@@ -25,8 +24,16 @@ export const gameStart = async (uuid, payload, socket) => {
   await syncTowersToRedis(socket);
   await syncTowerStatsToRedis();
 
-  const user = userDataClient.users.findUnique({
-    where: uuid,
+  const user = await userDataClient.users.findUnique({
+    where: {
+      userId: uuid,
+    },
+  });
+
+  const towers = await userDataClient.inventory.findMany({
+    where: {
+      userId: uuid,
+    }
   });
 
   // 저장되어있는 값이 있으면 초기 정보에 덮어 씌우기
@@ -36,12 +43,14 @@ export const gameStart = async (uuid, payload, socket) => {
   }
 
   // TODO: 유저 데이터 저장해두기
-  const data = {};
-  await RedisManager.setCache(uuid, data);
+  // const data = {};
+  // await RedisManager.setCache(uuid, data);
 
   // TODO: setStage 필요
 
   socket.emit('gameStart', result);
+
+  return { status: 'success', result } // 서버에서 참고?
 };
 
 export const gameEnd = async (uuid, payload) => {
