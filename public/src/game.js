@@ -162,7 +162,7 @@ function placeInitialTowers() {
 
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
-    const tower = new Tower(x, y, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+    const tower = new Tower(x, y, baseTower.id, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
     towers.push(tower);
     tower.draw(ctx, towerImage);
   }
@@ -395,10 +395,9 @@ buyTowerButton.addEventListener('click', () => {
       alert(`${towerCost - userGold} 금액이 부족합니다`);
       return;
     }
-    
-    userGold -= +towerCost;
-    console.log(`타워를 구매하였습니다. ${towerCost} 골드 사용. 현재 골드: ${userGold}`);
+  
     placeNewTower(selectedTowerPosition);
+
 
     buyTowerButton.disabled = true;
     clearPreviousTower();
@@ -487,9 +486,6 @@ canvas.addEventListener('click', (event) => {
                 alert(`${tower.cost - userGold} 금액이 부족합니다`);
                 return;
               }
-              
-              userGold -= +tower.cost;
-              console.log(`타워를 강화하였습니다. ${tower.cost} 골드 사용. 현재 골드: ${userGold}`);
 
             changeTower(existingTower, tower);
             resetSelectTowerWindow();
@@ -536,24 +532,30 @@ function sellTower(tower, salePrice) {
   }
   
   // 골드 추가
-  console.log(userGold);
   userGold += +salePrice;
   console.log(`타워가 판매되었습니다. ${salePrice} 골드 추가됨. 현재 골드: ${userGold}`);
 
   // 타워 판매 이벤트 서버로 전송
-  sendEvent(33, { towerId: tower.id, salePrice });
+  sendEvent(24, { towerId: tower.id, salePrice });
 
   // 인벤토리 업데이트
   updateTowerInventory();
 }
 
 function changeTower(currentTower, newTower) {
+  currentTower.id = newTower.id;
   currentTower.name = newTower.name;
   currentTower.damage = newTower.damage;
   currentTower.attackRange = newTower.attackRange;
   currentTower.attackSpeed = newTower.attackSpeed;
 
   console.log(`타워가 ${newTower.name}(으)로 강화되었습니다.`);
+                
+  userGold -= tower.cost;
+  sendEvent(23, { towerId: currentTower.id, towercost: newTower.cost });
+
+  console.log(`타워를 강화하였습니다. ${tower.cost} 골드 사용. 현재 골드: ${userGold}`);
+
   updateTowerInventory();
 }
 
@@ -619,7 +621,7 @@ function placeNewTower(position) {
 
   let baseTower = getTower("모험가 타워"); 
 
-  const tower = new Tower(centerX, centerY, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
+  const tower = new Tower(centerX, centerY, baseTower.id, baseTower.name, baseTower.damage, baseTower.attackRange, baseTower.attackSpeed, baseTower.cost, 1);
   towers.push(tower);
   tower.draw(ctx, towerImage);
 
