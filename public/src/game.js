@@ -314,6 +314,7 @@ Promise.all([
 
   serverSocket.on('gameStart', (data) => {
     if (data.status === 'success') {
+      console.log(data)
       userGold = data.userGold;
       baseHp = data.baseHp;
       numOfInitialTowers = data.numOfInitialTowers;

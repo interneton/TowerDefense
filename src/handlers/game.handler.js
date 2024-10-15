@@ -3,6 +3,7 @@ import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import redisClient from '../init/redis.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
+import { spawnMonsters } from '../models/monster.model.js'
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
@@ -21,8 +22,14 @@ export const gameStart = async (uuid, payload, socket) => {
     throw new CustomError('게임 초기 정보 검증 실패', 'gameStart');
   }
 
-  await syncTowersToRedis(socket);
-  await syncTowerStatsToRedis();
+  // redis에 업로드하는 함수들
+  const [tower,towerStat, monsters] = await Promise.all(
+    [
+      syncTowersToRedis(socket),
+      syncTowerStatsToRedis(),
+      spawnMonsters(uuid)
+  ])
+  result["monsters"] = monsters
 
   const user = await userDataClient.users.findUnique({
     where: {
