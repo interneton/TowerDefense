@@ -5,10 +5,8 @@ import { getExp } from '../models/exp.model.js';
 export const initTowerHandler = async (userId, payload) => {
     await addUserInfo(userId);
     let user = await getUserInfo(userId);
-    console.log(user);
-    if(user.inventory === null) {
-        user.inventory = [];
-        for(let i = 0; i < 3; i++) {
+    if(user.inventory.length < 3) {
+        for(let i = 0; i < 4-user.inventory.length; i++) {
             let randomTowerId = Math.floor(Math.random() * 4) + 6;
             let data = {userId: userId, towerId: randomTowerId, level:1, exp:0};
             user.inventory.push(data);
@@ -36,7 +34,6 @@ export const purchaseTowerHandler = async (userId,payload) => {
 };
 
 export const upgradeTowerHandler = async (userId, payload) => {
-    console.log(payload);
     let user = await getUserInfo(userId);
     let tower = await getTower(payload.towerId);
     let towerStat = await getTowerStat(payload.towerId);
