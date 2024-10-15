@@ -301,6 +301,7 @@ Promise.all([
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
 
+      console.log(userGold);
       if (!isInitGame) {
         initGame();
       }
@@ -361,6 +362,13 @@ buyTowerButton.disabled = true;
 
 buyTowerButton.addEventListener('click', () => {
   if (selectedTowerPosition) {
+
+    if(userGold < towerCost)
+    {
+      alert(`${towerCost - userGold} 금액이 부족합니다`);
+      return;
+    }
+      
     placeNewTower(selectedTowerPosition);
 
     buyTowerButton.disabled = true;
@@ -432,6 +440,7 @@ function placeNewTower(position) {
   selectedTowerPosition = null;
   buyTowerButton.disabled = true;
 
+  sendEvent(22, { towerId: baseTower.id, towerLevel: 1 });
   updateTowerInventory();
 }
 

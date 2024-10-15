@@ -7,7 +7,7 @@ import { spawnMonsters } from '../models/monster.model.js'
 
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
-  const { initData } = getGameAssets();
+  const { initData } = await getGameAssets();
   console.log(initData)
   const { userGold, baseHp } = initData.data[0];
   const result = {
