@@ -24,18 +24,32 @@ export const getTower = async (id) => {
   }
 };  
 
-//redis에 타워 정보 동기화
-export const syncTowersToRedis = async () => {
+export const syncTowersToRedis = async (socket) => {
   try {
-    const towers = await gameDataClient.towers.findMany({});
-
-    for (const tower of towers) {
-      await redisClient.set(`tower:${tower.id}`, JSON.stringify(tower));
+    const redisKeys = await redisClient.keys('tower:*');
+    const towers = [];
+    
+    for (const key of redisKeys) {
+      const cachedTower = await redisClient.get(key);
+      if (cachedTower) {
+        towers.push(JSON.parse(cachedTower));
+      }
     }
-    console.log('모든 타워 정보가 Redis에 동기화되었습니다.');
+
+    if (towers.length === 0) {
+      console.log("기존에 없어");
+      const dbTowers = await gameDataClient.towers.findMany({});
+      for (const tower of dbTowers) {
+        await redisClient.set(`tower:${tower.id}`, JSON.stringify(tower));
+        towers.push(tower);
+      }
+    }
+
+    socket.emit('allTowersData', towers);
+
   } catch (error) {
-    console.error('Redis 동기화 중 오류 발생:', error);
-    throw error;
+    console.error('all towers:', error);
+    // socket.emit('error', { message: '타워 정보 동기화 실패' });
   }
 };
 

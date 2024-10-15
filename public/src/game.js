@@ -29,6 +29,7 @@ let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
 const monsters = [];
 const towers = [];
+const towersData = [];
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
@@ -46,6 +47,9 @@ baseImage.src = "images/base.png";
 
 const pathImage = new Image();
 pathImage.src = "images/path.png";
+
+const towerPlaceholderImage = new Image();
+towerPlaceholderImage.src = 'images/mousePoint.png'; 
 
 const monsterImages = [];
 for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
@@ -159,17 +163,6 @@ function placeInitialTowers() {
   }
 }
 
-function placeNewTower() {
-  /* 
-    타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
-    빠진 코드들을 채워넣어주세요! 
-  */
-  const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(x, y);
-  towers.push(tower);
-  tower.draw(ctx, towerImage);
-}
-
 function placeBase() {
   const lastPoint = monsterPath[monsterPath.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
@@ -224,9 +217,12 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
-      sendEvent(32, {id: monster.monsterNumber, level: monster.level})
       monsters.splice(i, 1);
     }
+  }
+
+  if (selectedTowerPosition) {
+    drawTowerPlaceholder(selectedTowerPosition.x, selectedTowerPosition.y);
   }
 
   requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
@@ -253,6 +249,7 @@ Promise.all([
   new Promise((resolve) => (towerImage.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
+  new Promise((resolve) => (towerPlaceholderImage.onload = resolve)),
   ...monsterImages.map(
     (img) => new Promise((resolve) => (img.onload = resolve))
   ),
@@ -311,6 +308,12 @@ Promise.all([
       }
     });
 
+    serverSocket.on('allTowersData', (data) => {      
+      data.forEach( ele => {
+        towersData.push(ele);  
+      })
+    });
+
     sendEvent = (handlerId, payload) => {
       serverSocket.emit('event', {
         userId,
@@ -324,15 +327,88 @@ Promise.all([
 
   export { sendEvent };
 
-const buyTowerButton = document.createElement("button");
-buyTowerButton.textContent = "타워 구입";
-buyTowerButton.style.position = "absolute";
-buyTowerButton.style.top = "10px";
-buyTowerButton.style.right = "10px";
-buyTowerButton.style.padding = "10px 20px";
-buyTowerButton.style.fontSize = "16px";
-buyTowerButton.style.cursor = "pointer";
+  let selectedTowerPosition = null;
 
-buyTowerButton.addEventListener("click", placeNewTower);
+  const buyTowerButton = document.createElement("button");
+  buyTowerButton.textContent = "타워 구입";
+  buyTowerButton.style.position = "absolute";
+  buyTowerButton.style.top = "10px";
+  buyTowerButton.style.right = "10px";
+  buyTowerButton.style.padding = "10px 20px";
+  buyTowerButton.style.fontSize = "16px";
+  buyTowerButton.style.cursor = "pointer";
+  buyTowerButton.disabled = true;
+  
+  buyTowerButton.addEventListener("click", () => {
+    if (selectedTowerPosition) {
+      // Place the tower at the selected position
+      placeNewTower(selectedTowerPosition);
+  
+      // Disable the "Buy Tower" button and clear the placeholder
+      buyTowerButton.disabled = true;
+      clearPreviousTower();
+    } else {
+      alert("타워를 배치할 위치를 먼저 선택해주세요!");
+    }
+  });
+  
+  document.body.appendChild(buyTowerButton);
+  
+  canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+  
+    clearPreviousTower();
 
-document.body.appendChild(buyTowerButton);
+    selectedTowerPosition = { x, y };
+
+    drawTowerPlaceholder(x, y);
+
+    buyTowerButton.disabled = false;
+  });
+
+function drawTowerPlaceholder(x, y) {
+  const towerWidth = 100;
+  const towerHeight = 100;
+
+  ctx.drawImage(towerPlaceholderImage, x - towerWidth / 2, y - towerHeight / 2, towerWidth, towerHeight);
+}
+
+function clearPreviousTower() {
+  if (selectedTowerPosition) {
+    const { x, y } = selectedTowerPosition;
+    const towerWidth = 50;
+    const towerHeight = 50;
+
+    // Clear only the area where the previous tower was drawn
+    ctx.clearRect(x - towerWidth / 2, y - towerHeight / 2, towerWidth, towerHeight);
+  }
+}
+  
+  function placeNewTower(position) {
+    if (!position) {
+      alert("타워를 배치할 위치를 선택해주세요.");
+      return;
+    }
+    
+    const towerWidth = 78;
+    const towerHeight = 150;
+    const { x, y } = position;
+  
+    const centerX = x - towerWidth / 2;
+    const centerY = y - towerHeight / 2;
+  
+    const tower = new Tower(centerX, centerY, towerCost);
+    towers.push(tower);
+    tower.draw(ctx, towerImage);
+  
+    selectedTowerPosition = null;
+    buyTowerButton.disabled = true;
+  }
+
+  
+function getTower(towerId)
+{
+  console.log(towersData.find(data => data.name === "전사 타워"));
+}

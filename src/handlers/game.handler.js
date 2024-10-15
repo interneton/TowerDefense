@@ -1,5 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
+import redisClient from '../init/redis.js';
+import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 import RedisManager from '../init/redis.js';
 import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
 
@@ -19,6 +21,9 @@ export const gameStart = async (uuid, payload, socket) => {
   if (!timeStamp) {
     throw new CustomError('게임 초기 정보 검증 실패', 'gameStart');
   }
+
+  await syncTowersToRedis(socket);
+  await syncTowerStatsToRedis();
 
   const user = userDataClient.users.findUnique({
     where: uuid,

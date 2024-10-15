@@ -23,35 +23,4 @@ const connectRedis = async () => {
 
 connectRedis();
 
-// RedisManager 객체 정의
-const RedisManager = {
-  setCache: async (key, value, expiration = 3600) => {
-    try {
-      await redisClient.set(key, JSON.stringify(value), {
-        EX: expiration,
-      });
-    } catch (error) {
-      console.error('캐시 설정 오류', error);
-    }
-  },
-
-  getCache: async (key) => {
-    try {
-      const data = await redisClient.get(key);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('캐시 가져오기 오류', error);
-      return null;
-    }
-  },
-
-  deleteCache: async (key) => {
-    try {
-      await redisClient.del(key);
-    } catch (error) {
-      console.error('캐시 삭제 오류', error);
-    }
-  },
-};
-
-export default RedisManager;
+export default redisClient;
