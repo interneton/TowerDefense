@@ -5,7 +5,7 @@ export const addUserInfo = async (userId) => {
     try {
         let user = await userDataClient.users.findUnique({
             where: {
-                userId: userId
+                id: userId
             },
             include: {
                 inventory: true
@@ -15,8 +15,8 @@ export const addUserInfo = async (userId) => {
         const { userId: _, ...userinfos } = user;
 
         // Redis에 사용자 정보 저장
-        await RedisManager.set(`user:${userId}`, JSON.stringify(userinfos));
-
+        await RedisManager.setCache(`user:${userId}`, JSON.stringify(userinfos));
+        console.log(userinfos);
         return userinfos;
     } catch (error) {
         console.error('사용자 정보 추가 중 오류 발생:', error);
@@ -27,6 +27,7 @@ export const addUserInfo = async (userId) => {
 export const getUserInfo = async (userId) => {
     // Redis에서 사용자 정보 조회
     const cachedUser = await RedisManager.getCache(`user:${userId}`);
+    
     if (cachedUser) {
         return JSON.parse(cachedUser);
     }

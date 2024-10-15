@@ -1,18 +1,21 @@
-import { getUserInfo, updateUserGold } from '../models/userinfo.model.js';
+import { addUserInfo, getUserInfo, updateUserGold, updateUserInventory } from '../models/userinfo.model.js';
 import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.model.js';
 import { getExp } from '../models/exp.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
+    await addUserInfo(userId);
     let user = await getUserInfo(userId);
-    if(user.inventory.length === 0) {
+    console.log(user);
+    if(user.inventory === null) {
+        user.inventory = [];
         for(let i = 0; i < 3; i++) {
             let randomTowerId = Math.floor(Math.random() * 4) + 6;
             let data = {userId: userId, towerId: randomTowerId, level:1, exp:0};
             user.inventory.push(data);
         }
+        await updateUserInventory(userId, user.inventory);
     }
-    await updateUserInventory(userId, user.inventory);
-    return user.inventory;
+    return {status: 'success', message: '타워 초기화 성공', inventory: user.inventory};
 };
 
 export const purchaseTowerHandler = async (userId,payload) => {
