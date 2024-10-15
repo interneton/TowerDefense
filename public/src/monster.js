@@ -2,7 +2,7 @@ export class Monster {
   constructor(path, monsterImages, hp, attack, level, id) {
     // 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
     if (!path || path.length <= 0) {
-      throw new Error("몬스터가 이동할 경로가 필요합니다.");
+      throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
 
     this.monsterNumber = Math.floor(Math.random() * monsterImages.length); // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
@@ -19,7 +19,7 @@ export class Monster {
     this.hp = this.maxHp; // 몬스터의 현재 HP
     this.attackPower = attack; // 몬스터의 공격력 (기지에 가해지는 데미지)
     this.id = id;
-    this.mapOut = false;
+    this.isMapOut = false;
     // this.init(level);
   }
 
@@ -49,19 +49,15 @@ export class Monster {
     } else {
       const isDestroyed = base.takeDamage(this.attackPower); // 기지에 도달하면 기지에 데미지를 입힙니다!
       this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
-      this.mapOut = true; // 몬스터가 밖으로 나갔을 때는 돈을 지급해서는 안됨.
+      this.isMapOut = true; // 몬스터가 밖으로 나갔을 때는 돈을 지급해서는 안됨.
       return isDestroyed;
     }
   }
 
   draw(ctx) {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText(
-      `(레벨 ${this.level}) ${this.hp}/${this.maxHp} ${this.id}`,
-      this.x,
-      this.y - 5
-    );
+    ctx.font = '12px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText(`(레벨 ${this.level}) ${this.hp}/${this.maxHp} ${this.id}`, this.x, this.y - 5);
   }
 }
