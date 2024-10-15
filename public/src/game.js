@@ -536,7 +536,7 @@ function sellTower(tower, salePrice) {
   console.log(`타워가 판매되었습니다. ${salePrice} 골드 추가됨. 현재 골드: ${userGold}`);
 
   // 타워 판매 이벤트 서버로 전송
-  sendEvent(24, { towerId: tower.id, salePrice });
+  sendEvent(24, { towerInven: towers, towercost: salePrice });
 
   // 인벤토리 업데이트
   updateTowerInventory();
@@ -552,7 +552,7 @@ function changeTower(currentTower, newTower) {
   console.log(`타워가 ${newTower.name}(으)로 강화되었습니다.`);
                 
   userGold -= newTower.cost;
-  sendEvent(23, { towerId: currentTower.id, towercost: newTower.cost });
+  sendEvent(23, { towerInven: towers, towercost: newTower.cost });
 
   console.log(`타워를 강화하였습니다. ${newTower.cost} 골드 사용. 현재 골드: ${userGold}`);
   updateTowerInventory();
@@ -627,7 +627,7 @@ function placeNewTower(position) {
   selectedTowerPosition = null;
   buyTowerButton.disabled = true;
 
-  sendEvent(22, { towerId: baseTower.id, towerLevel: 1 });
+  sendEvent(22, { towerInven: towers, towerCost: tower.cost });
   updateTowerInventory();
 }
 
