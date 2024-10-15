@@ -224,8 +224,10 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
-      console.log("처치 : " + monster.id)
-      sendEvent(32, {spawnId : monster.id})
+      if(!monster.mapOut){
+        console.log("처치 : " + monster.id)
+        sendEvent(32, {spawnId : monster.id})
+      }
       monsters.splice(i, 1);
     }
   }
