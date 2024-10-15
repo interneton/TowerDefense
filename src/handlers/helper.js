@@ -32,24 +32,26 @@ export const handleEvent = (io, socket, data) => {
     socket.emit('response', { status: 'fail', message: 'Handler not found' });
     return;
   }
-  const response = handler(data.userId, data.payload, socket);
-  if (response  && response.broadcast) {
-    io.emit('response', 'broadcast');
-    return;
+  const response = handler(data.userId, data.payload, socket).then(response => {
+    if (response && response.broadcast) {
+      io.emit('response', 'broadcast');
+      return;
+    }
+    socket.emit('response', response);
   }
-  socket.emit('response', response);
+  )
 };
 
-export const issueToken = (socket) =>{
-  const {refreshToken, token} = socket.handshake.auth;
+export const issueToken = (socket) => {
+  const { refreshToken, token } = socket.handshake.auth;
   let decodedToken = validateToken(token, process.env.OUR_SECRET_ACCESS_KEY);
   let isRefresh = false;
 
   // accessToken이 만료된 경우.
-  if(!decodedToken){
+  if (!decodedToken) {
     // 토큰 유효성 검사
     decodedToken = validateToken(refreshToken, process.env.OUR_SECRET_ACCESS_KEY)
-    if(!decodedToken){
+    if (!decodedToken) {
       return 0
     }
 
