@@ -129,7 +129,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\dksw\\Desktop\\01.Projects\\스파르타 부트캠프\\TowerDefense\\prisma\\user\\generated\\userDataClient",
+      "value": "D:\\Projects\\JS\\TowerDefense\\prisma\\user\\generated\\userDataClient",
       "fromEnvVar": null
     },
     "config": {
@@ -143,12 +143,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\dksw\\Desktop\\01.Projects\\스파르타 부트캠프\\TowerDefense\\prisma\\user\\schema.prisma",
+    "sourceFilePath": "D:\\Projects\\JS\\TowerDefense\\prisma\\user\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../../.env",
-    "schemaEnvPath": "../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../..",
   "clientVersion": "5.20.0",

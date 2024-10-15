@@ -171,7 +171,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\dksw\\Desktop\\01.Projects\\스파르타 부트캠프\\TowerDefense\\prisma\\game\\generated\\gameDataClient",
+      "value": "D:\\Projects\\JS\\TowerDefense\\prisma\\game\\generated\\gameDataClient",
       "fromEnvVar": null
     },
     "config": {
@@ -185,7 +185,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\dksw\\Desktop\\01.Projects\\스파르타 부트캠프\\TowerDefense\\prisma\\game\\schema.prisma",
+    "sourceFilePath": "D:\\Projects\\JS\\TowerDefense\\prisma\\game\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -198,6 +198,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -216,8 +217,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "generated/gameDataClient",
-    "gameDataClient",
+    "prisma/game/generated/gameDataClient",
+    "game/generated/gameDataClient",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -246,7 +247,7 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "generated/gameDataClient/query_engine-windows.dll.node")
+path.join(process.cwd(), "prisma/game/generated/gameDataClient/query_engine-windows.dll.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "generated/gameDataClient/schema.prisma")
+path.join(process.cwd(), "prisma/game/generated/gameDataClient/schema.prisma")
