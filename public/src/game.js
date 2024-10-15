@@ -33,6 +33,7 @@ const monsters = [];
 const towers = [];
 const towersData = [];
 
+let moveStage = true;
 let existingTower = null;
 
 let score = 0; // 게임 점수
@@ -155,7 +156,6 @@ function getRandomPositionNearPath(maxDistance) {
 }
 
 function placeInitialTowers() {
-
   let baseTower = getTower('모험가 타워');
 
   for (let i = 0; i < numOfInitialTowers; i++) {
@@ -177,7 +177,7 @@ function placeInitialTowers() {
     tower.draw(ctx, towerImage);
   }
 
-  sendEvent2(21, { towerInven: towers}).then((data) => {
+  sendEvent2(21, { towerInven: towers }).then((data) => {
     console.log(data);
   });
 
@@ -253,8 +253,10 @@ function gameLoop() {
   }
 
   // 게임 클리어
-  if (!spawnMonsters.length && !monsters.length && isGameEnd) {
+  if (!spawnMonsters.length && !monsters.length && isGameEnd && moveStage) {
     isGameEnd = false;
+    moveStage = false;
+    sendEvent(11, { currentStage: monsterLevel, targetStage: monsterLevel + 1 });
     if (window.confirm('스테이지 클리어!?')) {
       location.reload();
     } else {
