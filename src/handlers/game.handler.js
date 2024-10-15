@@ -7,7 +7,8 @@ import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
 export const gameStart = async (uuid, payload, socket) => {
   const { timeStamp } = payload;
   const { initData } = getGameAssets();
-  const { userGold, baseHp } = initData.data;
+  console.log(initData)
+  const { userGold, baseHp } = initData.data[0];
   const result = {
     status: 'success',
     message: '게임 시작!',
@@ -15,6 +16,8 @@ export const gameStart = async (uuid, payload, socket) => {
     baseHp,
     numOfInitialTowers: 3,
     monsterSpawnInterval: 3000,
+    stage: 1,
+    towers: [],
   };
 
   if (!timeStamp) {
@@ -26,7 +29,7 @@ export const gameStart = async (uuid, payload, socket) => {
 
   const user = await userDataClient.users.findUnique({
     where: {
-      userId: uuid,
+      id: uuid,
     },
   });
 
@@ -39,7 +42,11 @@ export const gameStart = async (uuid, payload, socket) => {
   // 저장되어있는 값이 있으면 초기 정보에 덮어 씌우기
   if (user) {
     result.userGold = user.gold;
-    result.baseHp = user.baseHP;
+    result.stage = user.stage
+  }
+
+  if (towers) {
+    result.towers = towers;
   }
 
   // TODO: 유저 데이터 저장해두기
@@ -49,13 +56,11 @@ export const gameStart = async (uuid, payload, socket) => {
   // TODO: setStage 필요
 
   socket.emit('gameStart', result);
-
-  return { status: 'success', result } // 서버에서 참고?
 };
 
 export const gameEnd = async (uuid, payload) => {
   // TODO: 게임 종료 시 데이터 저장
-  const { gold, stage } = payload;
+  const { gold, stage } = payload; // towers, baseHp,
 
   await userDataClient.users.update({
     where: { id: uuid },
@@ -64,6 +69,9 @@ export const gameEnd = async (uuid, payload) => {
       stage: stage,
     },
   });
+
+  // 기존 타워와 새로 얻은 타워도 비교해야되는데
+  // await userDataClient.inventory.update
 
   return { status: 'success' };
 };
