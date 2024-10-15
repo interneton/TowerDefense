@@ -12,7 +12,8 @@ export const addUserInfo = async (uuid) => {
       },
     });
     const { initData } = await getGameAssets();
-    user.baseHp = initData.data[0].baseHp;
+
+    user.baseHp = initData.data.baseHp;
     // Redis에 사용자 정보 저장
     await RedisManager.setCache(uuid, JSON.stringify(user));
     return user;
