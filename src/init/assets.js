@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initMonsters } from "../models/monster.model.js"
+import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,9 +24,11 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [initData, monsters] = await Promise.all([
+    const [initData, monsters, tower, towerStat] = await Promise.all([
       readFileAsync('startData.json'),
-      initMonsters() // redis에 몬스터 정보 업로드
+      initMonsters(), // redis에 몬스터 정보 업로드
+      syncTowersToRedis(),
+      syncTowerStatsToRedis(),
     ]);
     gameAssets = { initData };
     return gameAssets;

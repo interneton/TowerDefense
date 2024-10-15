@@ -23,10 +23,8 @@ export const gameStart = async (uuid, payload, socket) => {
   }
 
   // redis에 업로드하는 함수들
-  const [tower,towerStat, monsters] = await Promise.all(
+  const [monsters] = await Promise.all(
     [
-      syncTowersToRedis(socket),
-      syncTowerStatsToRedis(),
       spawnMonsters(uuid)
   ])
   result["monsters"] = monsters
