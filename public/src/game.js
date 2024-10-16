@@ -262,7 +262,7 @@ function gameLoop() {
     isInitGame = false;
     
     let best = localStorage.getItem('best')
-    if(stagesData+1 > best) localStorage.setItem('best', stagesData+1)
+    if(stage+1 > best) localStorage.setItem('best', stage+1)
 
     if (window.confirm('스테이지 클리어!?')) {
       sendEvent(11, { timeStamp: Date.now(), currentStage: stage, targetStage: stage + 1 });
