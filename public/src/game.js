@@ -33,7 +33,7 @@ let spawnMonsters = []; // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
-let stagesData = [];
+let stagesData = 1;
 
 let moveStage = true;
 let existingTower = null;
@@ -259,7 +259,10 @@ function gameLoop() {
   if (!spawnMonsters.length && !monsters.length && isGameEnd && moveStage) {
     isGameEnd = false;
     moveStage = false;
-    sendEvent(11, { currentStage: monsterLevel, targetStage: monsterLevel + 1 });
+    let best = localStorage.getItem('best')
+    if(stagesData+1 > best) localStorage.setItem('best', stagesData+1)
+
+    // sendEvent(11, { currentStage: monsterLevel, targetStage: monsterLevel + 1 });
     if (window.confirm('스테이지 클리어!?')) {
       location.reload();
     } else {
@@ -347,7 +350,7 @@ Promise.all([
 
       console.log(data.towers);
       console.log(spawnMonsters);
-      stagesData.push(data.stage);
+      stagesData = data.stage;
 
       if (!isInitGame) {
         initGame();

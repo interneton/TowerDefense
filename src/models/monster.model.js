@@ -54,18 +54,21 @@ export const spawnMonsters = async (uuid) => {
     const monsters = [];
     const goldGolin = {
       name: 'goldGolin',
-      moveSpeed: 2,
+      moveSpeed: 3,
       hp: 1000,
       gold: 10000,
+      attack: 10 + 1 * stage,
+      level: stage + 1
     };
 
     for (let i = 0; i < stageInfo.totalSpawn; i++) {
       const monster = monsterDatas[Math.floor(Math.random() * monsterDatas.length)];
       monsters.push({ monster: monster, spawnId: i });
     }
-    if (Math.random < stageInfo.spawnGoblin / 100) {
-      goldGolin[level] = stage + 1;
-      monsters.push(goldGolin);
+    //if (Math.random() < stageInfo.spawnGoblin / 10) {
+    if(1){
+      console.log("고블린!")
+      monsters.push({ monster: goldGolin, spawnId: stageInfo.totalSpawn });
     }
 
     console.log(user);
