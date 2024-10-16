@@ -180,8 +180,6 @@ function placeInitialTowers() {
   }
 
   sendEvent(21, { towerInven: towers });
-
-  updateTowerInventory();
 }
 
 function placeBase() {
@@ -556,9 +554,6 @@ function sellTower(tower, salePrice) {
 
   // 타워 판매 이벤트 서버로 전송
   sendEvent(24, { towerInven: towers, towercost: salePrice });
-
-  // 인벤토리 업데이트
-  updateTowerInventory();
 }
 
 function changeTower(currentTower, newTower) {
@@ -574,7 +569,6 @@ function changeTower(currentTower, newTower) {
   sendEvent(23, { towerInven: towers, towercost: newTower.cost });
 
   console.log(`타워를 강화하였습니다. ${newTower.cost} 골드 사용. 현재 골드: ${userGold}`);
-  updateTowerInventory();
 }
 
 function resetSelectTowerWindow() {
@@ -657,7 +651,6 @@ function placeNewTower(position) {
   buyTowerButton.disabled = true;
 
   sendEvent(22, { towerInven: towers, towerCost: tower.cost });
-  updateTowerInventory();
 }
 
 function getTower(towerName) {
@@ -668,56 +661,4 @@ function getTower(towerName) {
   return towersData.find((data) => data.name === towerName);
 }
 
-// 타워 인벤토리 생성
-const towerInventory = document.createElement('div');
-towerInventory.id = 'towerInventory';
-towerInventory.style.position = 'absolute';
-towerInventory.style.top = '60px';
-towerInventory.style.right = '10px';
-towerInventory.style.width = '200px';
-towerInventory.style.padding = '10px';
-towerInventory.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-towerInventory.style.border = '1px solid black';
 
-document.body.appendChild(towerInventory);
-
-// 타워 인벤토리 업데이트 함수
-function updateTowerInventory() {
-  towerInventory.innerHTML = '<h3>타워 인벤토리</h3>';
-  towers.forEach((tower, index) => {
-    const towerElement = document.createElement('div');
-    towerElement.innerHTML = `타워 ${index + 1} - 레벨: ${tower.level}`;
-
-    const upgradeButton = document.createElement('button');
-    upgradeButton.textContent = '강화';
-    upgradeButton.addEventListener('click', () => upgradeTower(tower));
-
-    towerElement.appendChild(upgradeButton);
-    towerInventory.appendChild(towerElement);
-  });
-}
-
-// 타워 강화 함수
-function upgradeTower(tower) {
-  if (10000 >= tower.upgradeCost) {
-    sendEvent2(23, { towerId: tower.id, level: tower.level, gold: userGold, exp: tower.exp })
-      .then((resolve) => {
-        console.log(resolve);
-        if (resolve.status === 'success') {
-          userGold -= tower.upgradeCost;
-          tower.level++;
-          tower.upgradeCost = Math.floor(tower.upgradeCost * 1.5);
-          tower.damage = Math.floor(tower.damage * 1.2);
-          console.log('타워가 성공적으로 강화되었습니다.');
-          updateTowerInventory();
-        } else {
-          console.log('타워 강화에 실패했습니다.');
-        }
-      })
-      .catch((error) => {
-        console.log('업그레이드 중 오류 발생: ' + error);
-      });
-  } else {
-    console.log('골드가 부족합니다!');
-  }
-}
