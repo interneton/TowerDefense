@@ -83,6 +83,18 @@
      ```
 
 ## 🚀 구현한 도전 기능들
-1. 타워 환불 시스템
-2. 특정 타워 업그레이드
-3. 보물을 가진 고블린 몬스터 등장
+1. **타워 환불 시스템**
+2. **특정 타워 업그레이드**
+3. **보물을 가진 고블린 몬스터 등장**
+
+    캐시에 필드에 소환하는 몬스터 리스트를 업로드합니다.
+    이 때 stage에 설정된 totalSpawn 양 만큼 몬스터를 리스트에 추가합니다.
+    
+    마지막으로 spawnGoblin 확률을 가져와서 추가로 확률적으로 황금고블린을 생성 리스트에 추가합니다.
+
+    - **monster.model.js / spawnMonsters() 함수**:
+    ```javascript
+        if (Math.random() < stageInfo.spawnGoblin / 100) {
+            monsters.push({ monster: goldGolin, spawnId: stageInfo,totalSpawn });
+        }
+    ```
