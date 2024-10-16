@@ -19,9 +19,9 @@
 
 ---
 
-## Send Event 함수
+### Send Event 함수
 
-### `sendEvent(handlerId, payload)`
+## `sendEvent(handlerId, payload)`
 - **설명**: 이 함수는 이벤트를 서버로 보내기 위해 사용되며, 사용자 ID, 클라이언트 버전, 핸들러 ID, 그리고 사용자 정의 데이터를 포함한 payload를 전달합니다.
 - **매개변수**:
   - `handlerId`: 보내는 이벤트 유형을 식별하는 고유 ID.
@@ -30,9 +30,8 @@
   ```js
   sendEvent(21, { towerInven: towers });
   ```
----
 
-## Send Event 핸들러
+### Send Event 핸들러
 
 ## 1. `sendEvent(2, { timeStamp })` - **게임 시작**
 - **핸들러 함수**: `gameStart`
