@@ -34,46 +34,36 @@
 
 ## Send Event 핸들러
 
-### 1. `sendEvent(2, { timeStamp })` - **게임 시작**
+## 1. `sendEvent(2, { timeStamp })` - **게임 시작**
 - **핸들러 함수**: `gameStart`
 - **위치**: `game.handler.js`
 - **설명**: 게임을 초기화하고 타워, 스테이지, 유저의 골드와 같은 데이터를 Redis에 동기화합니다. 초기 게임 상태를 클라이언트로 전송합니다.
 - **관련 Redis 작업**: 타워, 타워 스탯, 몬스터, 스테이지 동기화.
 - **응답**: 게임 시작과 관련된 정보를 클라이언트로 전송 (`gameStart` 이벤트).
 
----
-
-### 2. `sendEvent(3, {})` - **게임 종료**
+## 2. `sendEvent(3, {})` - **게임 종료**
 - **핸들러 함수**: `gameEnd`
 - **위치**: `game.handler.js`
 - **설명**: 게임 종료 처리. 유저의 골드와 스테이지를 데이터베이스에 저장하고, Redis에서 캐시 데이터를 제거합니다.
 - **응답**: 게임 종료 확인 후 성공 메시지 반환.
 
----
-
-### 3. `sendEvent(11, { timeStamp, currentStage, targetStage })` - **스테이지 이동**
+## 3. `sendEvent(11, { timeStamp, currentStage, targetStage })` - **스테이지 이동**
 - **핸들러 함수**: `moveStageHandler`
 - **위치**: `stage.handler.js`
 - **설명**: 다음 스테이지로 이동을 처리하며, 데이터베이스에 스테이지를 업데이트하고 새로운 몬스터를 생성합니다.
 - **응답**: `moveStage` 이벤트를 통해 새로운 몬스터와 스테이지 이동 정보를 클라이언트로 전송.
 
----
-
-### 4. `sendEvent(21, { towerInven })` - **타워 초기화**
+## 4. `sendEvent(21, { towerInven })` - **타워 초기화**
 - **핸들러 함수**: `initTowerHandler`
 - **위치**: `tower.handler.js`
 - **설명**: 유저의 타워를 초기화하고, 이를 데이터베이스의 인벤토리에 저장합니다.
 - **응답**: 타워 초기화 성공 후 업데이트된 인벤토리를 클라이언트로 전송.
 
----
-
-### 5. `sendEvent(22, { towerInven, towerCost })` - **타워 구매**
+## 5. `sendEvent(22, { towerInven, towerCost })` - **타워 구매**
 - **핸들러 함수**: `purchaseTowerHandler`
 - **위치**: `tower.handler.js`
 - **설명**: 새로운 타워를 구매하는 과정에서 유저의 골드를 차감하고 타워를 인벤토리에 추가합니다.
 - **응답**: 타워 구매 성공 후 유저의 골드와 인벤토리를 업데이트.
-
----
 
 ### 6. `sendEvent(23, { towerInven, towercost })` - **타워 업그레이드**
 - **핸들러 함수**: `upgradeTowerHandler`
@@ -81,25 +71,19 @@
 - **설명**: 타워를 업그레이드하며, 업그레이드 비용을 차감하고 인벤토리를 갱신합니다.
 - **응답**: 타워 업그레이드 성공 후 유저 인벤토리와 골드 업데이트.
 
----
-
-### 7. `sendEvent(24, { towerInven, towercost })` - **타워 판매**
+## 7. `sendEvent(24, { towerInven, towercost })` - **타워 판매**
 - **핸들러 함수**: `sellTowerHandler`
 - **위치**: `tower.handler.js`
 - **설명**: 타워를 판매하고, 인벤토리와 골드를 업데이트합니다.
 - **응답**: 타워 판매 처리 확인 (현재 해당 핸들러는 구현이 완료되지 않음).
 
----
-
-### 8. `sendEvent(31, {})` - **몬스터 생성**
+## 8. `sendEvent(31, {})` - **몬스터 생성**
 - **핸들러 함수**: `spawnMonsterHandler`
 - **위치**: `monster.handler.js`
 - **설명**: (아직 구현되지 않음) 몬스터 생성을 처리하기 위한 핸들러.
 - **응답**: 현재 `null`을 반환.
 
----
-
-### 9. `sendEvent(32, { spawnId })` - **몬스터 처치**
+## 9. `sendEvent(32, { spawnId })` - **몬스터 처치**
 - **핸들러 함수**: `killMonsterHandler`
 - **위치**: `monster.handler.js`
 - **설명**: 몬스터를 처치한 후 게임 상태에서 해당 몬스터를 제거하고, 유저에게 골드를 지급하며 Redis에 남은 몬스터 정보를 갱신합니다.
