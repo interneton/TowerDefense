@@ -1,5 +1,4 @@
 import { getMonsters, setMonsters } from '../models/monster.model.js';
-import { redisClient } from '../init/redis.js';
 import { updateUserGold, getUserInfo } from '../models/userinfo.model.js';
 
 export const spawnMonsterHandler = (userId, payload, socket) => {

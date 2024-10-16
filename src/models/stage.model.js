@@ -1,4 +1,4 @@
-import { gameDataClient, userDataClient } from '../utils/prisma/index.js';
+import { gameDataClient } from '../utils/prisma/index.js';
 import { RedisManager, redisClient } from '../init/redis.js';
 import { getUserInfo } from '../models/userinfo.model.js';
 

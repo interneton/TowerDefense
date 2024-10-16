@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-import { addUser } from '../models/user.model.js';
 import { addUserInfo, getUserInfo } from '../models/userinfo.model.js';
 import { handleConnection, handleDisconnect, handleEvent, issueToken } from './helper.js';
 import { CLIENT_VERSION } from '../constants.js';

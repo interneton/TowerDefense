@@ -1,10 +1,8 @@
 import {
-  addUserInfo,
   getUserInfo,
   updateUserGold,
   updateUserInventory,
 } from '../models/userinfo.model.js';
-import { addTower, getTower, getTowerStat, updateTower } from '../models/tower.model.js';
 
 export const initTowerHandler = async (userId, payload) => {
   let user = await getUserInfo(userId);
