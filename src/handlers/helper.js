@@ -1,5 +1,4 @@
-import { getUsers, removeUser } from '../models/user.model.js';
-import { createStage, getStage } from '../models/stage.model.js';
+import { getUsers } from '../models/user.model.js';
 import { CLIENT_VERSION } from '../constants.js';
 import { validateToken, createAccessToken, createRefreshToken } from '../utils/tokens/tokens.js';
 import handlerMappings from './handlerMapping.js';
@@ -8,9 +7,6 @@ import { redisClient } from '../init/redis.js';
 export const handleConnection = (socket, userUUID) => {
   console.log(`New user connected: ${userUUID} with socket ID ${socket.id}`);
   console.log('Current users:', getUsers());
-
-  // 스테이지 빈 배열 생성
-  createStage(userUUID);
 
   // 필요 데이터 불러오기
   socket.emit('connection', { uuid: userUUID });

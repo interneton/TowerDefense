@@ -1,5 +1,4 @@
 import { getGameAssets } from '../init/assets.js';
-import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import { RedisManager } from '../init/redis.js';
 import { userDataClient } from '../utils/prisma/index.js';
 import { syncTowerStatsToRedis, syncTowersToRedis } from '../models/tower.model.js';

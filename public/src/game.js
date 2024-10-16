@@ -33,8 +33,8 @@ let spawnMonsters = []; // 몬스터 생성 리스트
 const monsters = [];
 const towers = [];
 const towersData = [];
-let stagesData = 1;
 
+let stage = 0;
 let moveStage = true;
 let existingTower = null;
 
@@ -259,15 +259,18 @@ function gameLoop() {
   if (!spawnMonsters.length && !monsters.length && isGameEnd && moveStage) {
     isGameEnd = false;
     moveStage = false;
+    isInitGame = false;
+    
     let best = localStorage.getItem('best')
     if(stagesData+1 > best) localStorage.setItem('best', stagesData+1)
 
-    // sendEvent(11, { currentStage: monsterLevel, targetStage: monsterLevel + 1 });
     if (window.confirm('스테이지 클리어!?')) {
-      location.reload();
+      sendEvent(11, { timeStamp: Date.now(), currentStage: stage, targetStage: stage + 1 });
     } else {
       location.href = 'index.html';
     }
+
+    return;
   }
 
   if (selectedTowerPosition) {
@@ -279,6 +282,7 @@ function gameLoop() {
 
 function initGame() {
   if (isInitGame) {
+
     return;
   }
 
@@ -290,6 +294,15 @@ function initGame() {
   setInterval(spawnMonster, monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
   gameLoop(); // 게임 루프 최초 실행
   isInitGame = true;
+}
+
+function nextGame()
+{
+  setInterval(spawnMonster, monsterSpawnInterval);
+  gameLoop();
+  isGameEnd = true;
+  moveStage = true;
+  stage++;
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
@@ -347,10 +360,7 @@ Promise.all([
       numOfInitialTowers = data.numOfInitialTowers;
       monsterSpawnInterval = data.monsterSpawnInterval;
       spawnMonsters = data.monsters;
-
-      console.log(data.towers);
-      console.log(spawnMonsters);
-      stagesData = data.stage;
+      stage = data.stage;
 
       if (!isInitGame) {
         initGame();
@@ -358,6 +368,17 @@ Promise.all([
     } else {
       alert('게임 초기 정보 검증에 실패했습니다.');
     }
+  });
+
+  serverSocket.on('moveStage', async (data) => {
+    showLoadingScreen();
+
+    spawnMonsters = data.monsters;    
+    setTimeout(function () {
+      hideLoadingScreen();
+      console.log(data.message, '다음 스테이지:', data.targetStage);
+      nextGame();
+    }, 1000);
   });
 
   serverSocket.on('allTowersData', (data) => {
@@ -401,6 +422,20 @@ Promise.all([
   };
 });
 export { sendEvent };
+
+function showLoadingScreen() {
+  const loadingElement = document.getElementById('loading-screen');
+  if (loadingElement) {
+    loadingElement.style.display = 'block';
+  }
+}
+
+function hideLoadingScreen() {
+  const loadingElement = document.getElementById('loading-screen');
+  if (loadingElement) {
+    loadingElement.style.display = 'none';
+  }
+}
 
 let selectedTowerPosition = null;
 

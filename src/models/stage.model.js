@@ -26,14 +26,6 @@ export const syncStageToRedis = async () => {
   }
 };
 
-export const createStage = async (uuid) => {
-  stages[uuid] = [];
-};
-
-export const clearStage = async (uuid) => {
-  return (stages[uuid] = []);
-};
-
 export const getStage = async (uuid) => {
   try {
     const user = await getUserInfo(uuid);
@@ -49,10 +41,4 @@ export const getStage = async (uuid) => {
     console.error('스테이지 조회 중 오류 발생:', error);
     throw error;
   }
-};
-
-// 스테이지 세팅
-export const setStage = async (uuid, id) => {
-  // await redisClient.set('stage: ' + uuid, JSON.stringify({ id: id }));
-  return stages[uuid].push({ id });
 };

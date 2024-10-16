@@ -24,8 +24,6 @@ export const getTower = async (id) => {
   }
 };  
 
-
-
 //redis에 타워 정보 동기화
 export const syncTowersToRedis = async (socket) => {
   try {

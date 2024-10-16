@@ -48,6 +48,13 @@ export const updateUserInventory = async (uuid, inventory) => {
   return 'success';
 };
 
+export const updateStage = async (uuid, stage) => {
+  let user = await getUserInfo(uuid);
+  user.stage = stage;
+  await RedisManager.setCache(uuid, JSON.stringify(user));
+  return 'success';
+};
+
 export const updateTower = async (userId, towerId, towerData) => {
   try {
     let user = await getUserInfo(uuid);
