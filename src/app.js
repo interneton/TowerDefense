@@ -21,16 +21,19 @@ app.use(express.urlencoded({ extended: false }));
 // 에러 핸들링 미들웨어를 등록합니다.
 app.use(ErrorHandlerMiddleware);
 
+// await syncTowerStatsToRedis();
+// await syncTowersToRedis();
+
 initSocket(server);
 
-server.listen(PORT, async () => {
-  console.log(`Server is running on port ${PORT}`);
+const serverInstance = server.listen(PORT, async () => {
+  console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
 
   try {
     const assets = await loadGameAssets();
     console.log(assets);
-    console.log('Assets loaded successfully');
+    console.log('게임 에셋이 성공적으로 로드되었습니다.');
   } catch (error) {
-    console.error('Failed to load game assets:', error);
+    console.error('게임 에셋 로드 실패:', error);
   }
 });

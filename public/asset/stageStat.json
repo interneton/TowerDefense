@@ -1,0 +1,5 @@
+{
+  "name": "stageStat",
+  "version": "1.0.0",
+  "data": [{ "id": 1, "totalSpawnUp": 10, "spawnInterver": 0.001, "spawnGoblin": 0.000001 }]
+}

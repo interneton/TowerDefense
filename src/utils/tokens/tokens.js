@@ -1,4 +1,3 @@
-import { userDataClient } from '../prisma/index.js';
 import jwt from 'jsonwebtoken';
 // 토큰에 관련된 함수가 정의된 파일
 
@@ -9,7 +8,7 @@ import jwt from 'jsonwebtoken';
  */
 export function createAccessToken(id) {
     const accessToken = jwt.sign(
-        { id: +id }, // JWT 데이터
+        { id: id }, // JWT 데이터
         process.env.OUR_SECRET_ACCESS_KEY,
         {expiresIn: '30m'}
     );
@@ -19,7 +18,7 @@ export function createAccessToken(id) {
 
 export function createRefreshToken(id) {
     const refreshToken = jwt.sign(
-        { id: +id }, // JWT 데이터
+        { id: id }, // JWT 데이터
         process.env.OUR_SECRET_REFRESH_KEY,
         {expiresIn: process.env.REFRESH_EXPIRESIN}
     );

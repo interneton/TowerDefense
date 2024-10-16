@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { initMonsters } from '../models/monster.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,8 +23,9 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    const [initData] = await Promise.all([
+    const [initData, monsters] = await Promise.all([
       readFileAsync('startData.json'),
+      initMonsters(), // redis에 몬스터 정보 업로드
     ]);
     gameAssets = { initData };
     return gameAssets;
@@ -32,6 +34,6 @@ export const loadGameAssets = async () => {
   }
 };
 
-export const getGameAssets = () => {
+export const getGameAssets = async () => {
   return gameAssets;
 };
